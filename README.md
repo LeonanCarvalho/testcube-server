@@ -1,4 +1,4 @@
-testcube-server
+Testcube Server
 ===============
 
 TestCube TCM server repository.
