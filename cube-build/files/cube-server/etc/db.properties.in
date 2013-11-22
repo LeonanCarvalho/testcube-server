@@ -1,0 +1,16 @@
+org.jatakasource.testcube.database.url=@DB_URL@
+org.jatakasource.testcube.database.username=@DB_NAME@
+org.jatakasource.testcube.database.password=@DB_INSTANCE_PASSWORD@
+org.jatakasource.testcube.database.driver=@DB_DRIVER@
+org.jatakasource.testcube.database.hibernate.dialect=@DB_HIBERNATE_DIALECT@
+
+#############################################################################
+# This section store the above parameters in Shell-Friendly Parsable format #
+# DB_SID - Required Only For Oracle support                                 #
+#############################################################################
+# DB_TYPE=@DB_TYPE@
+# DB_NAME=@DB_NAME@
+# DB_INSTANCE_PASSWORD=@DB_INSTANCE_PASSWORD@
+# DB_HOST=@DB_HOST@
+# DB_PORT=@DB_PORT@
+# DB_SID=@DB_SID@

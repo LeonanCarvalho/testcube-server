@@ -1,0 +1,13 @@
+# TestCube Server
+## Version : 1.1.0
+## Build : 1
+## Revision : 100
+## Release Date : 01/01/2013
+## Copyright (c) JatakaSource LTD
+## http://www.jatakasource.org
+
+# Server Instance
+instance.name=server
+instance.description=TestCube Server.
+instance.encoding=en_US
+instance.webserver.deploy.folder=.\webapps\testcube-server.war

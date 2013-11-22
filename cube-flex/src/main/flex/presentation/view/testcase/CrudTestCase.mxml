@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:CrudPanel xmlns:fx="http://ns.adobe.com/mxml/2009"
+				  xmlns:s="library://ns.adobe.com/flex/spark"
+				  xmlns:mx="library://ns.adobe.com/flex/mx"
+				  xmlns:panels="presentation.view.panels.*"
+				  xmlns:parsley="http://www.spicefactory.org/parsley"
+				  xmlns:code="http://code.google.com/p/flexlib/"
+				  xmlns:flexiframe="http://code.google.com/p/flex-iframe/"
+				  xmlns:crud="presentation.view.crud.*"
+				  xmlns:html="presentation.view.html.*"
+				  width="980" height="760" creationComplete="{setDocuments()}">
+	
+	<fx:Script>
+		<![CDATA[
+			import application.model.products.Category;
+			import application.model.testcase.CasePriority;
+			import application.model.testcase.CaseStatus;
+			import application.model.users.User;
+			
+			import infrastructure.TestCaseConfig;
+			
+			import mx.events.ValidationResultEvent;
+			
+			import presentation.model.testcase.CrudTestCasePM;
+			
+			import spark.events.IndexChangeEvent;
+			
+			import utils.ComboBoxUtils;
+
+			
+			[Bindable]
+			public var pModel:CrudTestCasePM;
+			
+			[Embed("/images/testcase/testcases-16.png")]
+			private static const TEST_CASE_SMALL:Class;
+			[Embed("/images/testcase/testcases-16.png")]
+			private static const TEST_ATTACHMENTS_SMALL:Class;
+			[Embed("/images/testcase/testcases-16.png")]
+			private static const TEST_SETUP_SMALL:Class;
+			
+			override public function injectionComplete(): void {
+				super.pm = pModel;
+				pModel.validateFunction = validate;
+				pModel.beforeSaveFunction = getDocuments;
+				pModel.setDomainObject(getDomainObject());
+				
+				// Load categoris use domainObject to determine testPlanId
+				// So, this must be called after setDomainObject
+				pModel.loadCategories();
+			}
+			
+			// Function to validate data and submit it to the server. 
+			private function validate():Boolean {			
+				var vResult:ValidationResultEvent;
+				
+				// Validate the required fields. 
+				if (nameValid.validate().type==ValidationResultEvent.INVALID)
+					return false;
+				if (descriptionValid.validate().type==ValidationResultEvent.INVALID) 
+					return false;
+				if (estimatedTimeValid.validate().type==ValidationResultEvent.INVALID) 
+					return false;
+				if (bugsValid.validate().type==ValidationResultEvent.INVALID) 
+					return false;
+				if (labelsValid.validate().type==ValidationResultEvent.INVALID) 
+					return false;
+				if (requirementsValid.validate().type==ValidationResultEvent.INVALID) 
+					return false;
+				if (assigneeValid.validate().type==ValidationResultEvent.INVALID) 
+					return false;
+				if (statusValid.validate().type==ValidationResultEvent.INVALID) 
+					return false;
+				return true;
+			}
+		
+			private function getDocuments():void {
+				getActionHtml();
+				getExpectedHtml();
+				getSetupHtml();
+			}
+			
+			private function setDocuments():void {
+				setAction();
+				setExpected();
+				setSetup();
+			}
+			
+			private function setExpected():void {
+				expectedEditor.html = pModel.testCase.expected;
+			}
+			
+			private function setAction():void {
+				actionEditor.html = pModel.testCase.action;
+			}
+			
+			private function setSetup():void {
+				// Setup editor is initialized only if click the second tab
+				if (setupEditor!= null)
+					setupEditor.html = pModel.testCase.setup;
+			}
+			
+			private function getExpectedHtml():void {
+				this.pModel.testCase.expected = expectedEditor.html;
+			}
+			
+			private function getActionHtml():void {
+				this.pModel.testCase.action = actionEditor.html;
+			}
+			
+			private function getSetupHtml():void {
+				// Setup editor is initialized only if click the second tab
+				if (setupEditor!=null)
+					this.pModel.testCase.setup = setupEditor.html;
+			}
+			
+			private function assigneeChangeHandler(evt:IndexChangeEvent):void {
+				if (ComboBoxUtils.validateSelection(assigneeCombo, User))
+					pModel.testCase.assignee = assigneeCombo.selectedItem;
+			}
+			
+			private function priorityChangeHandler(evt:IndexChangeEvent):void {
+				if (ComboBoxUtils.validateSelection(priorityCombo, CasePriority))
+					pModel.testCase.priorityId = priorityCombo.selectedItem.id;
+				else 
+					pModel.testCase.priorityId = ComboBoxUtils.NON_SELECTED_INDEX;
+			}
+			
+			private function categoryChangeHandler(evt:IndexChangeEvent):void {
+				if (ComboBoxUtils.validateSelection(categoryCombo, Category))
+					pModel.testCase.categoryId = categoryCombo.selectedItem.id;
+				else
+					pModel.testCase.categoryId = ComboBoxUtils.NON_SELECTED_INDEX;
+			}
+			
+			private function statusChangeHandler(evt:IndexChangeEvent):void {
+				if (ComboBoxUtils.validateSelection(statusCombo, CaseStatus))
+					pModel.testCase.statusId = statusCombo.selectedItem.id;
+				else 
+					pModel.testCase.statusId = ComboBoxUtils.NON_SELECTED_INDEX;
+			}
+			
+			override public function onSaveNewSuccess():void {
+				priorityCombo.selectedIndex = ComboBoxUtils.NON_SELECTED_INDEX;
+				categoryCombo.selectedIndex = ComboBoxUtils.NON_SELECTED_INDEX;
+				assigneeCombo.selectedIndex = ComboBoxUtils.NON_SELECTED_INDEX;
+				statusCombo.selectedIndex = ComboBoxUtils.NON_SELECTED_INDEX;
+				
+				setDocuments();
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<parsley:ContextBuilder config="{TestCaseConfig}"/>
+		
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<parsley:FastInject injectionComplete="injectionComplete()" property="pModel"
+							type="{CrudTestCasePM}"/>
+		
+		<mx:StringValidator id="nameValid" maxLength="100" property="text" required="true"
+							source="{nameText}"/>
+		
+		<mx:StringValidator id="descriptionValid" maxLength="200" property="text" required="true"
+							source="{descriptionText}"/>
+		
+		<mx:StringValidator id="estimatedTimeValid" maxLength="4" minLength="0" property="text"
+							required="false" source="{estimatedTimeText}"/>
+		
+		<mx:StringValidator id="bugsValid" maxLength="200" minLength="0" property="text"
+							required="false" source="{bugsText}"/>
+		
+		<mx:StringValidator id="labelsValid" maxLength="200" minLength="0" property="text"
+							required="false" source="{labelsText}"/>
+		
+		<mx:StringValidator id="requirementsValid" maxLength="200" minLength="0" property="text"
+							required="false" source="{requirementsText}"/>
+		
+		<mx:NumberValidator id="statusValid"
+							lowerThanMinError="@Resource(bundle='testcase', key='testcases.crud.status.notselected')"
+							minValue="0" property="selectedIndex" source="{statusCombo}"/>
+		
+		<mx:NumberValidator id="assigneeValid"
+							lowerThanMinError="@Resource(bundle='testcase', key='testcases.crud.assignee.notselected')"
+							minValue="0" property="selectedIndex" source="{assigneeCombo}"/>
+
+	</fx:Declarations>
+	
+	<panels:contentPanel>
+		<s:Group width="100%" height="100%">
+			<panels:CrudTab>
+				<mx:VBox id="infoTab"
+						 label="@Resource(bundle='testcase', key='testcases.crud.tab.info')"
+						 icon="{TEST_CASE_SMALL}">
+					<s:BorderContainer width="100%" height="100%" backgroundColor="#F4F4F4"
+									   borderVisible="false">
+					
+						<panels:FormHeading label="@Resource(bundle='testcase', key='testcases.crud.header.info')"/>
+						
+						<s:VGroup top="22" width="100%" height="100%">
+							<s:HGroup width="100%" height="208">
+								<s:Form id="leftForm" width="50%" height="100%">
+									<s:layout>
+										<s:FormLayout id="leftFormLay" gap="-10" paddingLeft="-10"/>
+									</s:layout>
+									
+									<crud:FormItem label="@Resource(bundle='testcase', key='testcases.crud.name')"
+												   required="true">
+										<s:TextInput id="nameText" width="220" height="22"
+													 showErrorSkin="true" showErrorTip="true"
+													 text="@{pModel.testCase.name}"/>
+									</crud:FormItem>
+									
+									<crud:FormItem label="@Resource(bundle='testcase', key='testcases.crud.description')"
+												   required="true">
+										<s:TextArea id="descriptionText" width="328" height="48"
+													showErrorSkin="true" showErrorTip="true"
+													text="@{pModel.testCase.description}"/>
+									</crud:FormItem>	
+										
+									<crud:FormItem label="@Resource(bundle='testcase', key='testcases.crud.priority')">
+										<s:ComboBox id="priorityCombo" width="220"
+													change="priorityChangeHandler(event)"
+													dataProvider="{pModel.priorities}"
+													labelField="name"
+													prompt="@Resource(bundle='testcase', key='testcases.crud.priority.selection')"
+													selectedIndex="{pModel.prioritySelectedIndex}"/>	
+									</crud:FormItem>
+									
+									<crud:FormItem label="@Resource(bundle='testcase', key='testcases.crud.category')">
+										<s:ComboBox id="categoryCombo" width="220"
+													change="categoryChangeHandler(event)"
+													dataProvider="{pModel.categories}"
+													labelField="name"
+													prompt="@Resource(bundle='testcase', key='testcases.crud.category.selection')"
+													selectedIndex="{pModel.categorySelectedIndex}"/>	
+									</crud:FormItem>
+
+									
+									<crud:FormItem label="@Resource(bundle='testcase', key='testcases.crud.estimatedTime')"
+												   required="false">
+										<s:TextInput id="estimatedTimeText" width="220" height="22"
+													 showErrorSkin="true" showErrorTip="true"
+													 text="@{pModel.testCase.estimatedTime}"
+													 toolTip="@Resource(bundle='testcase', key='testcases.crud.estimatedTime.tooltip')"/>
+									</crud:FormItem>
+									
+								</s:Form>	
+								
+								<s:Form id="rightForm" width="50%" height="100%">
+									<s:layout>
+										<s:FormLayout id="rightFormLay" gap="-10" paddingLeft="-10"/>
+									</s:layout>
+									
+									<crud:FormItem label="@Resource(bundle='testcase', key='testcases.crud.assignee')"
+												   required="true">
+										<s:ComboBox id="assigneeCombo" width="220"
+													change="assigneeChangeHandler(event)"
+													dataProvider="{pModel.users}"
+													labelField="username"
+													prompt="@Resource(bundle='testcase', key='testcase.crud.assignee.selection')"
+													selectedIndex="{pModel.assigneeSelectedIndex}"/>	
+									</crud:FormItem>
+									
+									<crud:FormItem label="@Resource(bundle='testcase', key='testcases.crud.status')"
+												   required="true">
+										<s:ComboBox id="statusCombo" width="220"
+													change="statusChangeHandler(event)"
+													dataProvider="{pModel.statuses}"
+													labelField="name"
+													prompt="@Resource(bundle='testcase', key='testcase.crud.status.selection')"
+													selectedIndex="{pModel.statusSelectedIndex}"/>	
+									</crud:FormItem>
+									
+									
+									<crud:FormItem label="@Resource(bundle='testcase', key='testcases.crud.labels')"
+												   required="false">
+										<s:TextInput id="labelsText" width="220" height="22"
+													 showErrorSkin="true" showErrorTip="true"
+													 text="@{pModel.testCase.labels}"/>
+									</crud:FormItem>
+									
+									<crud:FormItem label="@Resource(bundle='testcase', key='testcases.crud.requirements')"
+												   required="false">
+										<s:TextInput id="requirementsText" width="220" height="22"
+													 showErrorSkin="true" showErrorTip="true"
+													 text="@{pModel.testCase.requirements}"/>
+									</crud:FormItem>
+									
+									<crud:FormItem label="@Resource(bundle='testcase', key='testcases.crud.bugs')"
+												   required="false">
+										<s:TextInput id="bugsText" width="220" height="22"
+													 showErrorSkin="true" showErrorTip="true"
+													 text="@{pModel.testCase.bugs}"/>
+									</crud:FormItem>
+								</s:Form>			
+							</s:HGroup>
+						
+							<s:HGroup width="100%" height="100%">
+								<s:VGroup width="50%" height="100%" paddingLeft="2" paddingRight="2" paddingBottom="2">
+									<s:Label fontWeight="bold" paddingLeft="11"
+											 text="@Resource(bundle='testcase', key='testcases.crud.action')"/>
+									<html:HtmlEditor id="actionEditor" width="100%" height="100%" headerHeight="52"/>
+								</s:VGroup>
+								
+								<s:VGroup width="50%" height="100%" paddingLeft="2" paddingRight="2" paddingBottom="2">
+									<s:Label fontWeight="bold" paddingLeft="11"
+											 text="@Resource(bundle='testcase', key='testcases.crud.expected')"/>
+									<html:HtmlEditor id="expectedEditor" width="100%" height="100%" headerHeight="52"/>
+								</s:VGroup>
+							</s:HGroup>							
+						</s:VGroup>
+					</s:BorderContainer>
+				</mx:VBox>	
+			
+				<!-- Setup Tab -->
+				<mx:VBox id="setupTab" width="100%" height="100%"
+						 label="@Resource(bundle='testcase', key='testcases.crud.tab.setup')"
+						 borderVisible="false" creationComplete="setSetup()"
+						 icon="{TEST_SETUP_SMALL}">
+					<html:HtmlEditor id="setupEditor" width="100%" height="100%" html="{pModel.testCase.setup}"/>
+				</mx:VBox>
+				
+				<!-- Attachments Tab -->
+				<!--mx:VBox id="attachmentsTab" label="@Resource(bundle='testcase', key='testcases.crud.tab.attachments')" icon="{TEST_ATTACHMENTS_SMALL}" borderVisible="false" width="100%" height="100%">
+				</mx:VBox-->		
+			</panels:CrudTab>	
+		</s:Group>
+	</panels:contentPanel>
+</panels:CrudPanel>

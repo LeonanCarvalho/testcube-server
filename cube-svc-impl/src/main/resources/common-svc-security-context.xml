@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/aop
+			http://www.springframework.org/schema/aop/spring-aop.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+	<!-- DAO implementation for user access -->
+	<beans:bean id="daoAuthenticationProvider" class="org.jatakasource.testcube.authentication.AuthenticationProviderService">
+		<beans:property name="userDetailsService" ref="userDetailsService" />
+		<beans:property name="passwordEncoder" ref="shaPasswordEncoder" />
+		<beans:property name="messageSource" ref="authenticationMessageSource" />
+		<beans:property name="saltSource" ref="passwordSalt" />
+	</beans:bean>
+
+	<!-- Handle password Encoders for future support, currently we use only shaPasswordEncoder -->
+	<beans:bean name="passwordEncoders" class="org.jatakasource.common.authentication.PasswordEncoders">
+		<beans:property name="encoders">
+			<beans:map>
+				<beans:entry key="SHA1" value-ref="shaPasswordEncoder" />
+				<beans:entry key="MD5" value-ref="md5PasswordEncoder" />
+			</beans:map>
+		</beans:property>
+	</beans:bean>
+
+	<beans:bean id="shaPasswordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
+		<beans:property name="encodeHashAsBase64" value="true" />
+	</beans:bean>
+
+	<beans:bean id="md5PasswordEncoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder">
+		<beans:property name="encodeHashAsBase64" value="true" />
+	</beans:bean>
+
+	<beans:bean id="passwordSalt" class="org.springframework.security.authentication.dao.ReflectionSaltSource">
+		<beans:property name="userPropertyToUse" value="passwordSlat" />
+	</beans:bean>
+
+	<!-- Perform the actual authorization -->
+	<beans:bean id="userDetailsService" class="org.jatakasource.testcube.authentication.UserDetailsServiceImpl" />
+
+	<beans:bean id="authenticationMessageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<beans:property name="basenames">
+			<beans:list>
+				<beans:value>org/jatakasource/cube/authentication/authentication</beans:value>
+			</beans:list>
+		</beans:property>
+	</beans:bean>
+</beans:beans>

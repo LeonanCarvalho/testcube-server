@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This file is compiled as flex module, because flash builder canot 
+compile directly to target, this file must be under the root package -->
+
+<PodContentBase xmlns="presentation.view.dashboard.*"
+				xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:s="library://ns.adobe.com/flex/spark"
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:parsley="http://www.spicefactory.org/parsley"
+				implements="presentation.view.dashboard.IRefreshablePod">
+			
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<parsley:FastInject property="testRunResultsController" type="{TestRunResultsController}"/> 
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import application.controller.testrun.TestRunResultsController;
+			import application.model.grid.GridParameters;
+			import application.model.testrun.TestRunResult;
+			import application.model.testrun.TestRunResultsList;
+			
+			import mx.collections.ListCollectionView;
+			import mx.events.FlexEvent;
+			
+			import utils.ComboBoxUtils;
+			
+			[Bindable]
+			public var testRunResultsController:TestRunResultsController;
+			
+			[Bindable]public var innerData:ListCollectionView = null; // Grid data provider		 
+			
+			override protected function onCreationComplete(e:FlexEvent):void{
+				super.onCreationComplete(e);
+			
+				refreshData();
+			}
+			
+			override public function refreshData():void{
+				testRunResultsController.all(new GridParameters(ComboBoxUtils.COMBOBOX_LIMIT, GridParameters.DEFAULT_PAGE_START, TestRunResult.FIELD_UPDATED_DATE), toModel);			
+			}
+			
+			private function toModel(xml:XMLNode):void{
+				var results:TestRunResultsList = testRunResultsController.getFlexXBEngineInstance().deserialize(new XML(xml), TestRunResultsList) as TestRunResultsList;
+				
+				innerData =  new ListCollectionView(results.results);
+			}
+		]]>
+	</fx:Script>
+				
+	<s:List width="100%" height="100%" borderVisible="false" dataProvider="{innerData}"
+			itemRenderer="presentation.view.testrun.rendered.RunStatusListRenderer" lineHeight="24">
+		<s:layout>
+			<s:VerticalLayout gap="8" paddingLeft="4" paddingTop="4"/>
+		</s:layout>
+	</s:List>
+
+</PodContentBase>	
+

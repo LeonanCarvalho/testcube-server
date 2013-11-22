@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-deployment-structure>
+	<deployment>
+		<exclusions>
+			<module name="javax.faces.api" slot="main" />
+			<module name="com.sun.jsf-impl" slot="main" />
+			<module name="org.jboss.as.web" slot="main" />
+		</exclusions>
+		<dependencies>
+			<module name="org.jboss.as.web" slot="main">
+				<imports>
+					<include path="/org/**" />
+					<exclude path="/META-INF/**" />
+				</imports>
+			</module>
+		</dependencies>
+	</deployment>
+</jboss-deployment-structure>

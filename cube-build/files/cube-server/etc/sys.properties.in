@@ -1,0 +1,6 @@
+ehcache.disk.store.dir=@SERVER_CACHE@
+java.rmi.server.hostname=localhost
+
+org.jatakasource.testcube.environment.properties=file://@SERVER_CONF@/environment.properties
+org.jatakasource.testcube.log4j.properties=file://@SERVER_CONF@/log4j.xml
+org.jatakasource.common.jmx.url=@SERVER_STATE@

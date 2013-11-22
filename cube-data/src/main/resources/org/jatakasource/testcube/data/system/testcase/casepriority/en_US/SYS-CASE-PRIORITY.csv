@@ -1,0 +1,6 @@
+name,description,order
+"Lowest","Lowest",100
+"Low","Low",200
+"Normal","Normal",300
+"High","High",400
+"Highest","Highest",500

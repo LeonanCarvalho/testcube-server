@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Objects 
+	xmlns:fx="http://ns.adobe.com/mxml/2009"
+	xmlns:log="http://www.spicefactory.org/parsley/flex/logging"
+	xmlns="http://www.spicefactory.org/parsley">
+	
+	<fx:Declarations>	
+		<Object type="presentation.model.admin.products.CrudEnvironmentPM"/>
+	</fx:Declarations>
+</Objects>  

@@ -1,0 +1,13 @@
+# TestCube Server
+## Version : ${version}
+## Build : ${buildNumber}
+## Revision : ${revisionNumber}
+## Release Date : ${releaseDate}
+## Copyright (c) JatakaSource LTD
+## http://www.jatakasource.com
+
+# Server Instance
+instance.name=@SERVER_INSTANCE@
+instance.description=@SERVER_INSTANCE_DESC@
+instance.encoding=@SERVER_ENCODING@
+instance.webserver.deploy.folder=@WAR_FILE_NAME@

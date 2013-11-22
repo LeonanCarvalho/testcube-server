@@ -1,0 +1,81 @@
+#!/bin/bash
+#
+# testcube-@SERVER_INSTANCE@ daemon
+#
+# chkconfig: - 80 20
+# description: JatakaSource testcube-@SERVER_INSTANCE@ daemon
+# processname: testcube-@SERVER_INSTANCE@
+# config: /etc/sysconfig/testcube-@SERVER_INSTANCE@
+# pidfile: /var/run/jatakasource/testcube/server/@SERVER_INSTANCE@/testcube.pid
+#
+### BEGIN INIT INFO
+# Provides: testcube-@SERVER_INSTANCE@
+# Short-Description: start and stop testcube-@SERVER_INSTANCE@ daemon
+# Description: JatakaSource testcube-@SERVER_INSTANCE@ daemon
+### END INIT INFO
+
+# Source function library.
+if [ -f /lib/lsb/init-functions ]; then
+    . /lib/lsb/init-functions
+fi
+
+# TestCube server config file
+if [ -f /etc/default/testcube-@SERVER_INSTANCE@ ]; then 
+    . /etc/default/testcube-@SERVER_INSTANCE@
+fi
+
+# start-server.sh will use this to override pid after forking process.
+export TESTCUBE_PID
+
+# debian does not support recreating /var/run subdirectories so manual recreation is required.
+function recreate_pid_subdirs() {
+    TESTCUBE_PID_DIR=`dirname $TESTCUBE_PID`
+    if [ ! -d ${TESTCUBE_PID_DIR} ]; then
+        mkdir -p ${TESTCUBE_PID_DIR}
+        chown @SERVER_USER@:@SERVER_USER@ ${TESTCUBE_PID_DIR}
+        chmod 775 ${TESTCUBE_PID_DIR}
+    fi
+}
+
+function start_daemon(){
+    # Check rather this service is already started
+    status_of_proc -p ${TESTCUBE_PID} "${TESTCUBE_SCRIPT}" ${SERVER_NAME} > /dev/null 2>&1 && exit 0
+    
+    echo -n "Starting $SERVER_NAME: "
+    
+    # debian does not support recreating /var/run subdirectories so manual recreating is required.
+    recreate_pid_subdirs
+        
+    start-stop-daemon --start --quiet --make-pidfile --pidfile ${TESTCUBE_PID} \
+        --exec ${TESTCUBE_SCRIPT} -- --instance=@SERVER_INSTANCE@ || true
+    echo "$SERVER_NAME."
+}
+
+function stop_daemon(){
+    echo -n "Stopping $SERVER_NAME: "
+    start-stop-daemon --stop --quiet --pidfile ${TESTCUBE_PID} || true
+    echo "$SERVER_NAME."
+}
+
+case "$1" in
+	start)
+		start_daemon
+		;;
+	stop)
+        stop_daemon
+		;;
+	restart)
+		stop_daemon
+		sleep 1
+		start_daemon
+		;;
+	status)
+		status_of_proc -p ${TESTCUBE_PID} "${TESTCUBE_SCRIPT}" ${SERVER_NAME} && exit 0 || exit $?
+		;;
+	*)
+		echo "Usage: $SERVER_NAME {start|stop|restart|status}" >&2
+		exit 1
+		;;
+esac
+
+exit 0

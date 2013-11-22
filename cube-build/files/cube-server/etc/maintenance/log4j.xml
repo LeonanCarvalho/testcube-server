@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	
+<!DOCTYPE log4j:configuration PUBLIC
+        "http://jakarta.apache.org/log4j/"
+        "log4j.dtd">
+
+
+<log4j:configuration debug="false">
+	<appender name="A1" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %-5p %c - %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="DBM" class="org.apache.log4j.FileAppender">
+		<param name="File" value="/tmp/maintenance.log" />
+		<param name="Append" value="true" />
+		<param name="Encoding" value="UTF-8" />
+
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %-5p %c - %m%n" />
+		</layout>
+	</appender>
+
+	<category name="org.jatakasource.common.data" additivity="true">
+		<priority value="INFO" />
+		<appender-ref ref="DBM" />
+	</category>
+
+    <!-- Ignore schema export ERRORS -->
+	<category name="org.hibernate.tool.hbm2ddl.SchemaExport" additivity="true">
+		<priority value="FATAL" />
+		<appender-ref ref="DBM" />
+	</category>
+
+	<root>
+		<priority value="ERROR" />
+		<appender-ref ref="A1" />
+	</root>
+</log4j:configuration>

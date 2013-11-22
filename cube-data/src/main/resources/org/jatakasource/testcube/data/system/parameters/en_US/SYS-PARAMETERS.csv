@@ -1,0 +1,4 @@
+id,value,description,updateble,validatorClass
+"DEFAULT_DATE_FORMAT","DD-MM-YYYY JJ:NN:SS","Default date format","true","NULL"
+"SHORT_DATE_FORMAT","DD-MM-YYYY","Default date format","true","NULL"
+"NUMBER_OF_ROWS","25","Number of rows in a grid component","true","NULL"

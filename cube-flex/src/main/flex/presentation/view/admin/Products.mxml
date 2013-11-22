@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:panels="presentation.view.panels.*"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 xmlns:parsley="http://www.spicefactory.org/parsley"
+		 width="100%" height="100%" >
+	<fx:Script>
+		<![CDATA[
+			import presentation.model.admin.products.ProductsPM;
+			import presentation.model.admin.users.UsersPM;
+			
+			[Bindable]
+			public var pModel:ProductsPM = null;
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<parsley:FastInject property="pModel" type="{ProductsPM}" />
+	</fx:Declarations>
+	
+	<s:layout>
+		<s:HorizontalLayout/>
+	</s:layout>
+	
+	<panels:HeaderPanel id="mainPaenl" width="100%" height="100%" cornerRadiusRight="5"
+						title="@Resource(bundle='admin', key='admin.administrator.products.title')">
+		
+		<panels:SearchPanel width="100%" pmodel="{pModel}"/>
+	</panels:HeaderPanel>
+</s:Group>

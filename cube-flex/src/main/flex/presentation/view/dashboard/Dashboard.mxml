@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dashboard:DashboardBase xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:panels="presentation.view.panels.*"
+		 xmlns:resize="utils.resize.*"
+		 xmlns:flexlib="http://code.google.com/p/flexlib/"
+		 xmlns:dashboard="presentation.view.dashboard.*"
+		 creationComplete="onApplicationComplete(event)"
+		 width="100%" height="100%">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import application.model.testrun.RunStatusPerDateList;
+			
+			import flexlib.controls.tabBarClasses.SuperTab;
+			
+			import mx.rpc.events.ResultEvent;
+			// New object to avoid XML parse exception
+			private var statuses:RunStatusPerDateList = new RunStatusPerDateList();
+			
+			[Embed(source="/data/dashboard/dashboardPods.xml" ,mimeType="text/xml")]
+			private const embeddedPodsXML:Class;
+			
+			private var defaultPods:XML = XML(embeddedPodsXML);
+			
+			/** 
+			 * Override onCreationComplete to prevent HttpService call to dashboardPods.
+			 * To implement a custom dashboard per user preferances, just retrive pods.xml 
+			 * file from server.
+			 */ 	
+			override protected function onCreationComplete():void
+			{	
+				onResultHttpService(ResultEvent.createEvent(embeddedPodsXML.data));
+			}
+		]]>
+	</fx:Script>
+	<dashboard:states>
+		<s:State name="MainViewState"/>
+	</dashboard:states>
+
+	
+	<flexlib:SuperTabNavigator
+		id="tabBar"
+		change="onChangeTabBar(event)"
+		scrollSpeed="25"
+		stopScrollingEvent="{MouseEvent.MOUSE_UP}"
+		startScrollingEvent="{MouseEvent.MOUSE_DOWN}"
+		width="100%"
+		height="100%"
+		horizontalGap="1" verticalGap="0" 
+		paddingTop="0" paddingBottom="0"
+		dragEnabled="false"
+		dropEnabled="false"
+		borderVisible="false"
+		closePolicy="{SuperTab.CLOSE_NEVER}" >	
+
+		<mx:VBox label="@Resource(bundle='dashboard', key='presentation.view.dashboard.default.tab')" >
+			<mx:ViewStack
+				id="viewStack" 
+				paddingTop="0" 
+				width="100%" height="100%"/>
+		</mx:VBox>
+		
+	</flexlib:SuperTabNavigator>
+	
+</dashboard:DashboardBase>
+

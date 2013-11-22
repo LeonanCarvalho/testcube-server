@@ -1,0 +1,234 @@
+html,body{height:100%;}
+
+#header_wrapper {
+	background-color: #0A2540;
+	background-image: url("../../images/login/header_bg.png");
+	background-position: center bottom;
+	background-repeat: repeat-x;
+	width: 100%;
+}
+
+#header {
+	background-image: url("../../images/login/header_inner_bg.png");
+	background-repeat: no-repeat;
+	margin: 0 auto;
+	width: 960px;
+}
+
+#logo {
+	float: left;
+	margin: 28px 0 22px;
+}
+
+.clear {
+	clear: both;
+}
+
+#nav_wrapper {
+	background-color: #0473B2;
+	width: 100%;
+}
+
+#nav_wrapper ul.menu {
+	background-image: url("../../images/login/nav_inner_bg.png");
+	background-position: center top;
+	background-repeat: no-repeat;
+	font-size: 14px;
+	height: 45px;
+	line-height: 22px;
+	list-style: none outside none;
+	margin: 0 auto;
+	width: 960px;
+}
+
+#dashboard {
+	clear: both;
+	font-size: 12px;
+	overflow: hidden;
+	padding-top: 1em;
+	position: relative;
+	text-align: left;
+	
+	/* Properties to centralized div */	
+	display:table;
+	overflow:hidden;
+	margin:0px auto;
+	height:60%;
+	width:100%;
+}
+/* Properties to centralized div for IE*/	
+*:first-child+html #dashboard {position:relative;}/*ie7*/
+* html #dashboard{position:relative;}/*ie6*/
+
+#dashboard #dashboard-header:after {
+	clear: both;
+	content: ".";
+	display: block;
+	height: 0;
+	visibility: hidden;
+}
+
+#dashboard-content {
+	background-color: #FFFFFF;
+	border: 1px solid #BBBBBB;
+	border-radius: 0.4em 0.4em 0.4em 0.4em;
+	position: relative;
+	
+	/* Properties to centralized div */	
+	display:table-cell;
+	vertical-align: middle;
+}
+
+/* Properties to centralized div for IE*/	
+*:first-child+html #dashboard-content{position:absolute;top:50%;}/*ie7*/
+* html #dashboard-content{position:absolute;top:50%;}/*ie6*/
+
+*:first-child+html #login-content{position:relative;top:-50%;}/*ie7*/
+* html #login-content{position:relative;top:-50%;}/*ie6*/
+
+#login-content {
+	margin-left: auto;
+	margin-right: auto;
+	border: 1px solid #BBBBBB;
+	border-radius: 2px 2px 2px 2px;
+	position: relative;
+	max-width: 500px;
+	min-width: 200px;
+}
+
+#login-content-header {
+	font-size: 12px;
+	text-align: left;
+	color: #FFFFFF;
+}
+
+#content-header-title {
+	background-color: #0473B2;
+}
+
+form.login {
+	color: #333333;
+	font-family: arial, tahoma, verdana, sans-serif;
+	line-height: 1.4;
+	padding: 0.5em 1em 0;
+	font-size: 13px;
+	line-height: 1.4;
+	margin: 0 0 1em;
+	position: relative;
+}
+
+form.login div.field-group {
+	clear: both;
+	position: relative;
+}
+
+form.login .field-group {
+	margin-bottom: 5px;
+	min-height: 1.6em;
+	padding: 0 0 5px 140px;
+}
+
+form.login .field-group label {
+	display: block;
+	float: left;
+	left: -140px;
+	line-height: 1;
+	margin-right: -130px;
+	padding-top: 4px;
+	position: relative;
+	text-align: right;
+	width: 130px;
+}
+
+form.login option,form.login input.text {
+	color: #000000;
+	font-family: arial, tahoma, verdana, sans-serif;
+	font-size: 13px;
+}
+
+form.login .medium-field {
+	width: 165px;
+}
+
+form.login .group div {
+	margin-bottom: 0;
+	padding-bottom: 0.25em;
+}
+
+form.login input,form.login select {
+	margin-right: 5px;
+	padding: 2px;
+}
+
+fieldset {
+	margin-bottom: 0;
+}
+
+form.login div.checkbox,form.login div.radio, #errormessageslabel {
+	padding: 0 0 5px 140px;
+}
+
+form.login .group {
+	margin-bottom: 5px;
+	min-height: 1.6em;
+	padding: 0 0 5px;
+	position: relative;
+}
+
+form.login div.radio input.radio,form.login div.checkbox input.checkbox
+	{
+	border: none;
+	float: left;
+	margin-top: 2px;
+	margin-left: 0px;
+	width: 15px;
+	border-image: initial;
+}
+
+form.login .buttons-container {
+	border-top: 1px solid #DDD;
+	clear: both;
+	margin-bottom: 5px;
+	min-height: 2.7em;
+	overflow: auto;
+	padding: 0 0 5px 140px;
+}
+
+form.login input.button,form.login button {
+	line-height: 1.2;
+	margin: 10px 10px 0 0;
+	padding: 0 0.5em;
+}
+
+form.login .buttons a.cancel {
+    line-height: 1.2;
+    margin: 10px 10px 0 0;
+}
+
+.view a, .view a:link, .view a:visited {
+    color: #003366;
+    text-decoration: none;
+}
+
+#footer {
+	background-color: #F7F7F7;
+	clear: both;
+	color: #666666;
+	font-size: 11px;
+	padding: 0.5em 1em 120px;
+	text-align: center;
+}
+
+#poweredbymessage a.seo-link {
+	cursor: auto;
+	outline: medium none;
+	text-decoration: none;
+}
+
+#footer a {
+	color: #666666;
+}
+
+#errormessageslabel {
+	color: red;
+}

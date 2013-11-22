@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:CrudPanel xmlns:fx="http://ns.adobe.com/mxml/2009"
+				  xmlns:s="library://ns.adobe.com/flex/spark"
+				  xmlns:mx="library://ns.adobe.com/flex/mx"
+				  xmlns:parsley="http://www.spicefactory.org/parsley"
+				  xmlns:code="http://code.google.com/p/flexlib/"
+				  xmlns:flexiframe="http://code.google.com/p/flex-iframe/"
+				  xmlns:panels="presentation.view.panels.*"
+				  xmlns:crud="presentation.view.crud.*"
+				  xmlns:html="presentation.view.html.*"
+				  xmlns:testplan="presentation.view.testplan.*"
+				  width="860" height="680" creationComplete="{setDocument()}" >
+	
+	<fx:Script>
+		<![CDATA[
+			import application.model.products.Product;
+			import application.model.testplan.PlanType;
+			import application.model.versions.Version;
+			
+			import infrastructure.TestPlanConfig;
+			
+			import mx.events.ValidationResultEvent;
+			
+			import presentation.model.testplan.CrudTestPlanPM;
+			
+			import spark.events.IndexChangeEvent;
+			
+			import utils.ComboBoxUtils;
+			
+			[Bindable]
+			public var pModel:CrudTestPlanPM;
+			
+			[Embed("/images/testplan/testplans-16.png")]
+			private static const TEST_PLAN_SMALL:Class;
+			[Embed("/images/testcase/testcases-16.png")]
+			private static const TEST_CASE_SMALL:Class;
+			[Embed("/images/testplan/testplans-16.png")]
+			private static const TEST_ATTACHMENTS_SMALL:Class;
+			
+			override public function injectionComplete(): void {
+				super.pm = pModel;
+				pModel.validateFunction = validate;
+				pModel.beforeSaveFunction = getDocumentHtml;
+				pModel.setDomainObject(getDomainObject());
+			}
+			
+			// Function to validate data and submit it to the server. 
+			private function validate():Boolean {			
+				var vResult:ValidationResultEvent;
+				
+				// Validate the required fields. 
+				if (nameValid.validate().type==ValidationResultEvent.INVALID)
+					return false;
+				if (descriptionValid.validate().type==ValidationResultEvent.INVALID) 
+					return false;
+				if (productValidator.validate().type==ValidationResultEvent.INVALID) 
+					return false;
+				if (versionValidator.validate().type==ValidationResultEvent.INVALID) 
+					return false;
+				if (planTypeValidator.validate().type==ValidationResultEvent.INVALID) 
+					return false;
+				
+				
+				return true;
+			}
+		
+			private function productChangeHandler(evt:IndexChangeEvent):void {
+				if (ComboBoxUtils.validateSelection(productCombo, Product))
+					pModel.testPlan.product = productCombo.selectedItem;
+				
+				pModel.loadVersions();
+			}
+			
+			private function versionChangeHandler(evt:IndexChangeEvent):void {
+				if (ComboBoxUtils.validateSelection(versionCombo, Version))
+					pModel.testPlan.version = versionCombo.selectedItem;
+			}
+			
+			private function planTypeChangeHandler(evt:IndexChangeEvent):void {
+				if (ComboBoxUtils.validateSelection(plantypeCombo, PlanType))
+					pModel.testPlan.planType = plantypeCombo.selectedItem;
+			}
+			
+			private function setDocument():void {
+				testPlanEditor.html = pModel.testPlan.document;
+			}
+			
+			private function getDocumentHtml():void {
+				this.pModel.testPlan.document = testPlanEditor.html;
+			}
+			
+			override public function onSaveNewSuccess():void {
+				productCombo.selectedIndex = ComboBoxUtils.NON_SELECTED_INDEX;
+				versionCombo.selectedIndex = ComboBoxUtils.NON_SELECTED_INDEX;
+				plantypeCombo.selectedIndex = ComboBoxUtils.NON_SELECTED_INDEX;
+				
+				setDocument();
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<parsley:ContextBuilder config="{TestPlanConfig}"/>
+		
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<parsley:FastInject injectionComplete="injectionComplete()" property="pModel"
+							type="{CrudTestPlanPM}"/>
+		
+		<mx:StringValidator id="nameValid" maxLength="100" property="text" required="true"
+							source="{nameText}"/>
+		
+		<mx:StringValidator id="descriptionValid" maxLength="200" property="text" required="true"
+							source="{descriptionText}"/>
+		
+		<mx:NumberValidator id="productValidator"
+							lowerThanMinError="@Resource(bundle='testplan', key='testplans.crud.product.notselected')"
+							minValue="0" property="selectedIndex" source="{productCombo}"/>
+		
+		<mx:NumberValidator id="versionValidator"
+							lowerThanMinError="@Resource(bundle='testplan', key='testplans.crud.version.notselected')"
+							minValue="0" property="selectedIndex" source="{versionCombo}"/>
+		
+		<mx:NumberValidator id="planTypeValidator"
+							lowerThanMinError="@Resource(bundle='testplan', key='testplans.crud.plantype.notselected')"
+							minValue="0" property="selectedIndex" source="{plantypeCombo}"/>
+	</fx:Declarations>
+	
+	<panels:contentPanel>
+		<s:Group width="100%" height="100%">
+			<panels:CrudTab>
+				<mx:VBox id="infoTab"
+						 label="@Resource(bundle='testplan', key='testplans.crud.tab.info')"
+						 icon="{TEST_PLAN_SMALL}">
+					<s:BorderContainer width="100%" height="100%" backgroundColor="#F4F4F4"
+									   borderVisible="false">
+					
+						<panels:FormHeading label="@Resource(bundle='testplan', key='testplans.crud.header.info')"/>
+						
+						<s:VGroup top="22" width="100%" height="100%">
+							<s:HGroup width="100%" height="152">
+								<s:Form id="leftForm" width="50%" height="100%">
+									<s:layout>
+										<s:FormLayout id="leftFormLay" gap="-10" paddingLeft="-10"/>
+									</s:layout>
+									
+									<crud:FormItem label="@Resource(bundle='testplan', key='testplans.crud.name')"
+												   required="true">
+										<s:TextInput id="nameText" width="220" height="22"
+													 showErrorSkin="true" showErrorTip="true"
+													 text="@{pModel.testPlan.name}"/>
+									</crud:FormItem>
+									
+									<crud:FormItem label="@Resource(bundle='testplan', key='testplans.crud.description')"
+												   required="true">
+										<s:TextArea id="descriptionText" width="328" height="66"
+													showErrorSkin="true" showErrorTip="true"
+													text="@{pModel.testPlan.description}"/>
+									</crud:FormItem>	
+									
+									<crud:FormItem label="@Resource(bundle='testplan', key='testplans.crud.document')"/>
+								</s:Form>	
+								
+								<s:Form id="rightForm" width="50%" height="100%">
+									<s:layout>
+										<s:FormLayout id="rightPlanFormLay" gap="-10"
+													  paddingLeft="-10"/>
+									</s:layout>
+									
+									<crud:FormItem label="@Resource(bundle='testplan', key='testplans.crud.product')"
+												   required="true">
+										<s:ComboBox id="productCombo" width="150"
+													change="productChangeHandler(event)"
+													dataProvider="{pModel.products}"
+													labelField="name"
+													prompt="@Resource(bundle='testplan', key='testplans.crud.product.selection')"
+													selectedIndex="{pModel.productSelectedIndex}"/>	
+									</crud:FormItem>
+									
+									<crud:FormItem label="@Resource(bundle='testplan', key='testplans.crud.version')"
+												   required="true">
+										<s:ComboBox id="versionCombo" width="150"
+													change="versionChangeHandler(event)"
+													dataProvider="{pModel.versions}"
+													labelField="name"
+													prompt="@Resource(bundle='testplan', key='testplans.crud.version.selection')"
+													selectedIndex="{pModel.versionSelectedIndex}"/>	
+									</crud:FormItem>
+									
+									<crud:FormItem label="@Resource(bundle='testplan', key='testplans.crud.plantype')"
+												   required="true">
+										<s:ComboBox id="plantypeCombo" width="150"
+													change="planTypeChangeHandler(event)"
+													dataProvider="{pModel.planTypes}"
+													labelField="name"
+													prompt="@Resource(bundle='testplan', key='testplans.crud.plantype.selection')"
+													selectedIndex="{pModel.planTypeSelectedIndex}"/>	
+									</crud:FormItem>
+								</s:Form>			
+							</s:HGroup>
+						
+							<s:HGroup width="100%" height="100%" paddingLeft="2" paddingRight="2" paddingBottom="2">
+								<html:HtmlEditor id="testPlanEditor" width="100%" height="100%"/>
+							</s:HGroup>
+						</s:VGroup>
+					</s:BorderContainer>
+				</mx:VBox>	
+				
+				<!-- Attachments Tab -->
+				<mx:VBox id="testCasesTab" label="@Resource(bundle='testplan', key='testplans.crud.tab.testcases')" icon="{TEST_CASE_SMALL}" 
+						 borderVisible="false" width="100%" height="100%">
+					<testplan:TestCasesTab enabled="{pModel.isUpdateState()}"/>
+				</mx:VBox>
+				
+				<!-- Attachments Tab -->
+				<!--mx:VBox id="attachmentsTab" label="@Resource(bundle='testplan', key='testplans.crud.tab.attachments')" icon="{TEST_ATTACHMENTS_SMALL}" borderVisible="false" width="100%" height="100%">
+				</mx:VBox-->		
+			</panels:CrudTab>	
+		</s:Group>
+	</panels:contentPanel>
+</panels:CrudPanel>

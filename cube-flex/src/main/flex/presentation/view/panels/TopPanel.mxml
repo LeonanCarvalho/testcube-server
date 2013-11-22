@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"  
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"   
+		 xmlns:buttons="presentation.view.buttons.*"
+		 xmlns:parsley="http://www.spicefactory.org/parsley"	
+		 backgroundImage="@Embed('/images/toppanel/header_bg.png')" 
+		 backgroundImageFillMode="scale" width="100%" color="#FFFFFF"> 
+	
+	
+	<fx:Declarations>
+		<parsley:FastInject property="pModel" type="{TopPanelPM}" injectionComplete="{injectionComplete()}" /> 
+	</fx:Declarations>
+
+	<fx:Script><![CDATA[
+		import mx.events.ResizeEvent;
+		
+		import presentation.model.panels.TopPanelPM;
+		import presentation.model.popup.QuestionMessage;
+		import presentation.view.buttons.TopButtonClickEvent;
+		import presentation.view.buttons.TopButtonNewEvent;
+		import presentation.view.messages.Messages;
+		 
+		[Bindable]
+		public var pModel:TopPanelPM = null;
+		
+		public function injectionComplete():void{
+			postInitialize()
+		}
+		
+		public function postInitialize():void{			
+			this.addEventListener(TopButtonNewEvent.EVENT_TYPE, onButtonNew);
+			this.addEventListener(TopButtonClickEvent.EVENT_TYPE, onButtonClick);
+		}
+		
+		protected function logoutClickHandler(event:MouseEvent):void{			
+			pModel.showQuestion(new QuestionMessage(pModel.logoutButtonTitle, pModel.logoutQuestion), null, logOut);
+		}
+		
+		public function onButtonNew(event:TopButtonNewEvent):void {
+			pModel.onButtonNew(event);
+		}
+		
+		public function onButtonClick(event:TopButtonClickEvent):void { 
+			pModel.onButtonClick(event);
+		}
+		
+		
+		private function logOut():void{ 
+			pModel.logout();
+		}
+	]]> 
+	</fx:Script>
+	
+	<s:BorderContainer width="100%" backgroundImage="@Embed('/images/toppanel/header_inner_bg.png')" borderVisible="false">
+		<s:HGroup width="100%" layoutDirection="{pModel.getDirection()}" direction="{pModel.getDirection()}">		
+			<s:HGroup width="50%" 
+					  height="48" 
+					  gap="60" 
+					  paddingLeft="20" 
+					  paddingRight="20" 
+					  paddingTop="10"
+					  paddingBottom="10">
+				
+				<buttons:TopButton id="dashboard" 
+								   text="@Resource(bundle='toppanel', key='toppanel.buttons.dashboard')"
+								   source="@Embed('/images/toppanel/dashboard.png')"
+								   width="70" currentState="down"/>
+			
+				<buttons:TopButton id="testplans"							   
+								   text="@Resource(bundle='toppanel', key='toppanel.buttons.testplans')"
+								   source="@Embed('/images/toppanel/testplan.png')"
+								   width="70"/>
+				
+				<buttons:TopButton id="testcases" 
+								   text="@Resource(bundle='toppanel', key='toppanel.buttons.testcases')"
+								   source="@Embed('/images/toppanel/testcase.png')"
+								   width="70"/>
+				
+				<buttons:TopButton id="testruns" 
+								   text="@Resource(bundle='toppanel', key='toppanel.buttons.testruns')"
+								   source="@Embed('/images/toppanel/testrun.png')"
+								   width="70"/>
+				
+				<!--buttons:TopButton id="reports" 
+								   text="@Resource(bundle='toppanel', key='toppanel.buttons.reports')"
+								   source="@Embed('/images/toppanel/reports.png')"
+								   width="70"/-->
+				
+				<s:HGroup height="100%" verticalAlign="middle">
+					<mx:Spacer width="100"/>
+				</s:HGroup>
+				
+				<buttons:TopButton id="administration" 
+								   text="@Resource(bundle='toppanel', key='toppanel.buttons.administration')"
+								   source="@Embed('/images/toppanel/administration.png')"
+								   width="70" visible="{pModel.isAdmin()}"/>				
+			</s:HGroup>
+		
+			<s:HGroup width="50%"  horizontalAlign="right" gap="20">
+				<s:HGroup paddingTop="14" >
+					<mx:Spacer width="45" />
+					<s:HGroup>
+						<!--mx:Image id="logo" source="" useHandCursor="true" buttonMode="true" click=""/-->
+					</s:HGroup>
+				</s:HGroup>
+				 
+				<s:BorderContainer backgroundImage="undefined" borderVisible="false" height="30" >
+					<s:HGroup verticalAlign="middle"  height="100%" paddingLeft="4" paddingRight="4" paddingBottom="4" paddingTop="4">				
+						<mx:Image useHandCursor="true" buttonMode="true" click="logoutClickHandler(event)" 
+								  source="@Embed('/images/toppanel/logout.png')" />
+						<s:Label id="logout" useHandCursor="true" buttonMode="true" click="logoutClickHandler(event)" text="{pModel.logoutText}"/>								
+					</s:HGroup>
+				</s:BorderContainer>
+			</s:HGroup>
+		</s:HGroup>
+	</s:BorderContainer>
+</s:BorderContainer>

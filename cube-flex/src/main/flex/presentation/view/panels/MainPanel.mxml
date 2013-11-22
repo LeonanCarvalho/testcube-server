@@ -1,0 +1,70 @@
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 xmlns:panels="presentation.view.panels.*" 
+		 xmlns:admin="presentation.view.admin.*"
+		 xmlns:testplan="presentation.view.testplan.*"
+		 xmlns:testcase="presentation.view.testcase.*"
+		 width="100%" height="100%"  
+		 creationComplete="postInitialize()" xmlns:testrun="presentation.view.testrun.*" xmlns:dashboard="presentation.view.dashboard.*">
+	
+	<s:layout>
+		<s:HorizontalLayout />
+	</s:layout>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script><![CDATA[
+		import presentation.view.buttons.TopButtonClickEvent;
+		import presentation.view.buttons.TopButtonNewEvent;
+		
+		public function postInitialize():void{			
+			this.addEventListener(TopButtonClickEvent.EVENT_TYPE, onButtonClick);
+		}
+		
+		public function onButtonClick(event:TopButtonClickEvent):void { 
+			var selectedChild:DisplayObject = centerPanel.getChildByName(event.getButtonName().toLocaleLowerCase());
+			if (selectedChild!=null){
+				var selectedIndex:int = centerPanel.getChildIndex(selectedChild);
+				centerPanel.selectedIndex = selectedIndex;
+			}
+		}
+	]]> 
+	</fx:Script>
+	
+	<mx:Canvas id="mainCanvas"  minWidth="1260" minHeight="800" horizontalScrollPolicy="auto" verticalScrollPolicy="auto" width="100%" height="100%">
+		
+		<s:VGroup left="0" right="0" top="0" bottom="0" gap="0" id="vgroup">
+			
+			<s:SkinnableContainer width="100%" height="100">	
+				<s:HGroup id="topMenuGroup" width="100%">
+					<panels:TopPanel id="topPanel" name="topPanel" borderVisible="false"/>
+				</s:HGroup> 
+			</s:SkinnableContainer>
+		
+			<panels:NavigationPanel/> 
+		
+			<mx:ViewStack textFieldClass="mx.core.UIFTETextField" id="centerPanel" width="100%" height="100%" selectedIndex="0">				
+				<s:NavigatorContent id="dashboard" name="dashboard" width="100%" height="100%">
+					<dashboard:Dashboard/>
+				</s:NavigatorContent>
+				<s:NavigatorContent id="testplans" name="testplans" width="100%" height="100%">
+					<testplan:TestPlans />
+				</s:NavigatorContent>
+				<s:NavigatorContent id="testcases" name="testcases" width="100%" height="100%">
+					<testcase:TestCases />
+				</s:NavigatorContent>
+				<s:NavigatorContent id="testruns" name="testruns" width="100%" height="100%">
+					<testrun:TestRuns />
+				</s:NavigatorContent>
+				<s:NavigatorContent id="reports" name="reports" width="100%" height="100%">
+				</s:NavigatorContent>
+				<s:NavigatorContent id="administration" name="administration" width="100%" height="100%">
+					<admin:Administration />
+				</s:NavigatorContent>
+			</mx:ViewStack>				
+		</s:VGroup>
+	</mx:Canvas>	
+</s:Group>

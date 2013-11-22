@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<list:ThumbnailListItemRendered xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				xmlns:list="presentation.view.lists.*">
+	
+	<fx:Script>
+		<![CDATA[		
+			import presentation.model.admin.AdministratorPM;
+			import presentation.view.lists.IconListItemClickEvent;
+			
+			override public function onClick(event:MouseEvent): void{
+				this.dispatchEvent(new IconListItemClickEvent(event, data, AdministratorPM.EVENT_TYPE));				
+			}
+		]]>
+	</fx:Script>
+	
+</list:ThumbnailListItemRendered>

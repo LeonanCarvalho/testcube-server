@@ -1,0 +1,28 @@
+/**
+ * TestCube is an enterprise Test management tool.
+ * Copyright (C) 2011 JatakaSource Ltd.
+ *
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * TestCube is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with TestCube.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.jatakasource.testcube.svc.security;
+
+import org.jatakasource.common.svc.ReturnMessageEnum;
+import org.jatakasource.common.svc.exception.ServiceRunTimeException;
+
+public class LastAdminException extends ServiceRunTimeException {
+	private static final long serialVersionUID = 653381083496972753L;
+
+	public LastAdminException() {
+		super(ReturnMessageEnum.ERROR, "You can't change/remove the last administrator privileges.");
+	}
+}

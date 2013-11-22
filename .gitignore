@@ -1,0 +1,12 @@
+.metadata
+target
+.settings
+.classpath
+.idea
+.project
+*.ipr
+*.iml
+*.iws
+*.ttf
+html-template
+flex-wrapper

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   xmlns:panels="presentation.view.panels.*"
+				   xmlns:parsley="http://www.spicefactory.org/parsley"
+				   xmlns:lists="presentation.view.lists.*" 
+				   width="100%" height="100%" borderVisible="false" backgroundColor="#F7F7F7" > 
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<parsley:FastInject property="pModel" type="{TestCasesPM}" /> 
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import presentation.events.panels.searchpanel.SearchRefreshEvent;
+			import presentation.model.grid.PagingEvent;
+			import presentation.model.testcase.CrudTestCasePM;
+			import presentation.model.testcase.TestCasesPM;
+			
+			import spark.events.IndexChangeEvent;
+			
+			[Bindable]
+			public var pModel:TestCasesPM = null;
+			
+			public function onClearProducts(event:MouseEvent):void{
+				productsChangeHandler(null);
+				
+				pModel.loadProducts();
+			}
+		
+			public function onClearTestPlans(event:MouseEvent):void{
+				testPlansChangeHandler(null);
+			}
+			
+			protected function productsChangeHandler(evt:IndexChangeEvent):void {
+				if (evt == null){
+					// Clear products selection
+					productsList.selectedIndex = -1;
+					pModel.selectedProduct = null;
+				} else
+					pModel.selectedProduct = evt.currentTarget.selectedItem.original;
+				
+				// Reload TestPlan list
+				pModel.loadTestPlans();
+				
+				// Clear testplan selection and send a search event
+				onClearTestPlans(null);
+			}
+			
+			protected function testPlansChangeHandler(evt:IndexChangeEvent):void {
+				if (evt == null){
+					// Clear testplan selection
+					testPlansList.selectedIndex = -1;
+					
+					pModel.selectedTestPlan = null;
+				} else
+					pModel.selectedTestPlan = evt.currentTarget.selectedItem.original;
+				
+				pModel.dispatcher(new SearchRefreshEvent(CrudTestCasePM.TESTCASES_SEARCH_REFRESH_EVENT, PagingEvent.getResetPagingEvent()));
+			}
+			
+		]]>
+	</fx:Script>
+
+	
+	<s:layout>
+		<s:HorizontalLayout paddingLeft="5" paddingRight="5" paddingTop="6" paddingBottom="6"/>
+	</s:layout>
+	
+	<s:BorderContainer borderVisible="false" width="100%" height="100%">
+		<s:layout>
+			<s:HorizontalLayout/>
+		</s:layout>
+		
+		<mx:HDividedBox width="100%" height="100%">
+
+			<s:VGroup width="200" maxWidth="400" height="100%">
+				<panels:HeaderPanel id="products" width="100%" height="50%" cornerRadiusLeft="5" borderVisible="true"
+									title="@Resource(bundle='testcase', key='testcases.shortcuts.products')" 
+									displayCloseButton="true"
+									closeButtonImageSource="@Embed('/images/testcase/clear-24.png')"
+									closeButtonToolTip="@Resource(bundle='testcase', key='testcases.shortcuts.icon.tooltip')"
+									closeButtonTop="2"
+									closeButtonClick="onClearProducts">
+					
+					<s:VGroup paddingTop="10" width="100%" height="100%"> 
+						<s:List id="productsList" height="100%" width="100%" borderVisible="false" change="productsChangeHandler(event)" 
+								itemRenderer="presentation.view.testcase.rendered.TestCaseIconListItemRendered" 
+								dataProvider="{pModel.products}">
+						</s:List>
+					</s:VGroup>			
+				</panels:HeaderPanel>
+				
+				<panels:HeaderPanel id="testplans" width="100%" height="50%" borderVisible="true"
+									title="@Resource(bundle='testcase', key='testcases.shortcuts.testplans')" 
+									displayCloseButton="true"
+									closeButtonImageSource="@Embed('/images/testcase/clear-24.png')"
+									closeButtonToolTip="@Resource(bundle='testcase', key='testcases.shortcuts.icon.tooltip')"
+									closeButtonTop="2"
+									closeButtonClick="onClearTestPlans">
+					
+					<s:VGroup paddingTop="10" width="100%" height="100%"> 
+						<s:List id="testPlansList" height="100%" width="100%" borderVisible="false" change="testPlansChangeHandler(event)" 
+								itemRenderer="presentation.view.testcase.rendered.TestCaseIconListItemRendered" 
+								dataProvider="{pModel.testplans}">
+						</s:List>
+					</s:VGroup>			
+					
+				</panels:HeaderPanel> 
+			</s:VGroup>
+			
+			<s:Group width="100%" height="100%">
+				<panels:HeaderPanel id="mainPaenl" width="100%" height="100%" cornerRadiusRight="5"
+									title="@Resource(bundle='testcase', key='testcases.title')">
+					
+					<panels:SearchPanel width="100%" pmodel="{pModel}"/>
+				</panels:HeaderPanel>
+			</s:Group>
+		</mx:HDividedBox>
+	</s:BorderContainer>
+	
+</s:BorderContainer>

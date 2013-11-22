@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.jatakasource.testcube</groupId>
+		<artifactId>cube-parent</artifactId>
+		<version>1.1.0</version>
+	</parent>
+
+	<artifactId>cube-web</artifactId>
+	<version>1.1.0</version>
+	<packaging>war</packaging>
+
+	<name>CUBE ${project.artifactId} :: Application WAR </name>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.jatakasource.commons</groupId>
+			<artifactId>jataka-common-web</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jatakasource.testcube</groupId>
+			<artifactId>cube-svc-impl</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>flex</id>
+			<activation>
+				<jdk>[1.3,1.7]</jdk>
+			</activation>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.sonatype.flexmojos</groupId>
+						<artifactId>flexmojos-maven-plugin</artifactId>
+						<version>${flex.mojos.version}</version>
+						<executions>
+							<execution>
+								<phase>validate</phase>
+								<goals>
+									<goal>copy-flex-resources</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
+						<artifactId>maven-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy-resources</id>
+								<!-- here the phase you need -->
+								<phase>validate</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${basedir}/src/main/flex-wrapper</outputDirectory>
+									<overwrite>true</overwrite>
+									<resources>
+										<resource>
+											<directory>${flex.home}/templates/swfobject</directory>
+											<includes>
+												<include>**/*.*</include>
+											</includes>
+											<excludes>
+												<exclude>index.template.html</exclude>
+											</excludes>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
+						<artifactId>maven-war-plugin</artifactId>
+						<configuration>
+							<webResources>
+								<resource>
+									<!-- this is relative to the pom.xml directory -->
+									<directory>${basedir}/src/main/flex-wrapper</directory>
+								</resource>
+
+								<resource>
+									<!-- this is relative to the pom.xml directory -->
+									<directory>${project.build.directory}/${project.build.finalName}</directory>
+									<includes>
+										<include>*.swf</include>
+									</includes>
+								</resource>
+							</webResources>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+
+			<dependencies>
+				<dependency>
+					<groupId>org.jatakasource.testcube</groupId>
+					<artifactId>cube-flex</artifactId>
+					<version>${version}</version>
+				        <type>swf</type>
+				</dependency>
+
+				<!-- Additional Flex modules -->
+				<dependency>
+					<groupId>org.jatakasource.testcube</groupId>
+					<artifactId>cube-flex</artifactId>
+					<version>${version}</version>
+					<type>swf</type>
+					<classifier>activities</classifier>
+				</dependency>
+
+				<dependency>
+					<groupId>org.jatakasource.testcube</groupId>
+					<artifactId>cube-flex</artifactId>
+					<version>${version}</version>
+					<type>swf</type>
+					<classifier>lateststatus</classifier>
+				</dependency>
+
+				<dependency>
+					<groupId>org.jatakasource.testcube</groupId>
+					<artifactId>cube-flex</artifactId>
+					<version>${version}</version>
+					<type>swf</type>
+					<classifier>recentruns</classifier>
+				</dependency>
+			</dependencies>
+
+		</profile>
+	</profiles>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+	</build>
+	
+	<!-- Also required here to copy flex resource in the build phase-->
+	<pluginRepositories>
+		<pluginRepository>
+			<id>flex-mojos-repository2</id>
+			<url>http://repository.sonatype.org/content/groups/flexgroup</url>
+		</pluginRepository>
+	</pluginRepositories>
+	
+	<repositories>
+		<repository>
+			<id>flexmojos repository</id>
+			<url>http://repository.sonatype.org/content/groups/flexgroup</url>
+		</repository>
+	</repositories>
+</project>
+

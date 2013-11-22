@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				autoDrawBackground="true" width="100%">
+	
+	<fx:Script>
+		<![CDATA[				 
+			import application.model.testrun.TestRunResult;
+			
+			import presentation.model.admin.testrun.RunStatusUtils;
+			
+			public function prepare(rowData:TestRunResult):Class {	
+				return RunStatusUtils.getImage(rowData.status.id);	
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="hovered"/>
+		<s:State name="selected" />
+	</s:states>
+	
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+
+	<s:HGroup verticalAlign="middle" paddingBottom="1" paddingTop="1" width="100%" minHeight="24">
+		<s:HGroup paddingLeft="4" width="65%" verticalAlign="middle">
+			<s:Image id="img" verticalAlign="middle" width="16" height="16" source="{prepare(data as TestRunResult)}"/>
+			<s:Label text="{data.testCase.name}" toolTip="{data.testCase.description}" paddingTop="2" buttonMode="false" width="100%"/>
+		</s:HGroup>
+		
+		<s:HGroup width="35%" verticalAlign="middle"> 
+			<s:Label text="@Resource(bundle='dashboard', key='dashboard.activities.updatedby.label')" />
+			<s:Label text="{data.updatedBy.username}" textAlign="left" fontWeight="bold"/>
+		</s:HGroup>	
+	</s:HGroup>
+	
+</s:ItemRenderer>

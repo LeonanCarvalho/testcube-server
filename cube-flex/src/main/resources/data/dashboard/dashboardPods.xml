@@ -1,0 +1,51 @@
+<views>
+	<!-- 
+	Used to specify the pod content in the dashboard sample app.
+	To keep the implementation straightforward, all of the data is
+	stored in this file rather than a database or separate XML files.
+	<?xml version="1.0" encoding="utf-8"?> CANNOT be used in embeded file.
+	-->
+	<!--
+		<view> - Represents a tab.
+			id - Must be unique so state can be saved properly.
+			label - The label of the tab.
+			<pod>
+				id - Must be unique per view so state can be saved properly.
+				type - Type of pod content. Valid values are chart, pieChart, form and list. "chart" and "pieChart" each have drill downs to one level.
+					   "chart" is a fixed drill down to 30 days in a month.
+					   "pieChart" is a fixed drill down to four geographical regions.
+				title - The title of the pod.
+				dataSource - The xml to load for the pod.
+				selectedViewIndex - Sets the default content view for pod content with a view stack. 
+				valueField - For chart pods, the field from the xml data to use for displaying the value. This field should be numeric.
+				categoryField - For chart pods, the field from the xml data to use for displaying the category.
+				dataTipUnitLabel - Rollover label used for displaying the units.
+								   Label is delimited by "*" and places the first value before the unit and the second value after the unit. Ex: $50M.
+				dataTipLabelField - Rollover label field used for PieCharts.
+				labels - For form pods, used to label the fields.
+				dataFields - For form pods, used to assign the data fields to the form fields.
+							 The second field should always be a date expressed in milliseconds since the epoch.
+	-->
+	<view
+		id="viewCharts"
+		label="My Dashboard">
+		<pod
+			id="lateststatus"
+			title="Latest status"
+			type="list"
+			selectedViewIndex="1"
+			module="cube-flex-1.1.0Lateststatus.swf"/>
+		<pod
+			id="activities"
+			title="Activities"
+			type="chart"
+			selectedViewIndex="2"
+			module="cube-flex-1.1.0Activities.swf"/>
+		<pod
+			id="recentruns"
+			title="Recent runs"
+			type="list"
+			selectedViewIndex="3"
+			module="cube-flex-1.1.0Recentruns.swf"/>
+	</view>
+</views>

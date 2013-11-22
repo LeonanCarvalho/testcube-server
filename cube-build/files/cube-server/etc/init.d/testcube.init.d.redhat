@@ -1,0 +1,96 @@
+#!/bin/bash
+#
+# testcube-@SERVER_INSTANCE@ daemon
+#
+# chkconfig: - 80 20
+# description: JatakaSource testcube-@SERVER_INSTANCE@ daemon
+# processname: testcube-@SERVER_INSTANCE@
+# config: /etc/sysconfig/testcube-@SERVER_INSTANCE@
+# pidfile: /var/run/jatakasource/testcube/server/@SERVER_INSTANCE@/testcube-@SERVER_INSTANCE@.pid
+#
+### BEGIN INIT INFO
+# Provides: testcube-@SERVER_INSTANCE@
+# Short-Description: start and stop testcube-@SERVER_INSTANCE@ daemon
+# Description: JatakaSource testcube-@SERVER_INSTANCE@ daemon
+### END INIT INFO
+
+# Source function library.
+if [ -f /etc/init.d/functions ]; then
+    . /etc/init.d/functions
+fi
+
+# TestCube server config file
+if [ -f /etc/sysconfig/testcube-@SERVER_INSTANCE@ ]; then 
+    . /etc/sysconfig/testcube-@SERVER_INSTANCE@
+fi
+
+RETVAL=0
+
+start() {
+    if [ -f $TESTCUBE_PID ]; then
+        read kpid < $TESTCUBE_PID
+        if checkpid $kpid 2>&1; then
+            echo "${SERVER_NAME} already running"
+            return -1
+        else
+            echo "pid file found but no process running for pid $kpid, continuing"
+        fi
+    fi
+
+    echo -n $"Starting ${SERVER_NAME} ..."
+
+    if [ -f /etc/rc.d/init.d/functions ]; then
+        daemon --user $SERVER_USER --pidfile $TESTCUBE_PID $TESTCUBE_SCRIPT "--instance=@SERVER_INSTANCE@"
+    else
+        su - $SERVER_USER -c "$TESTCUBE_SCRIPT --instance=@SERVER_INSTANCE@"
+    fi
+
+    RETVAL=$?
+    [ $RETVAL = 0 ] && success || failure
+    echo
+    return $RETVAL
+}
+
+stop() {
+    echo "Stopping ${SERVER_NAME} ..."
+
+    killproc -p $TESTCUBE_PID ${SERVER_NAME}
+
+    RETVAL=$?
+    [ $RETVAL = 0 ] && success || failure
+    echo
+    return $RETVAL
+}
+
+# See how we were called.
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  status)
+        status -p ${TESTCUBE_PID} testcube-@SERVER_INSTANCE@
+        ;;
+  restart|reload)
+        stop
+        sleep 2
+        start
+        ;;
+  condrestart)
+        if [ -f ${TESTCUBE_PID} ] ; then
+                stop
+                start
+        fi
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|status|restart|reload|condrestart}"
+        exit 1
+esac
+
+exit $RETVAL
+
+#
+#
+# end

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+					xmlns:s="library://ns.adobe.com/flex/spark"
+					xmlns:grauge="presentation.view.grauge.*"
+					xmlns:mx="library://ns.adobe.com/flex/mx"
+					clipAndEnableScrolling="true">
+	
+	<fx:Metadata>
+		[ResourceBundle("testrun")]
+	</fx:Metadata> 
+
+	
+	<fx:Script>
+		<![CDATA[	
+			import application.model.testcase.CaseStatus;
+			import application.model.testrun.RunStatistics;
+			import application.model.testrun.RunstatusEnum;
+			
+			import mx.charts.ChartItem;
+			import mx.charts.HitData;
+			import mx.charts.series.items.ColumnSeriesItem;
+			import mx.charts.series.items.PieSeriesItem;
+			import mx.collections.ArrayCollection;
+			import mx.graphics.IFill;
+			import mx.graphics.SolidColor;
+			
+			import presentation.model.admin.testrun.TestRunUtils;
+			
+			import utils.string.StringUtils;
+			
+			private function displayStatus(data:HitData):String {
+				return TestRunUtils.displayStatus(data);
+			}
+			
+			private function displayText(statistics:ArrayCollection):String{
+				if (data==null)
+					return StringUtils.EMPTY;
+				
+				return TestRunUtils.displayText(statistics);
+			}
+			
+			private function fillFunction(element:ChartItem, index:Number):IFill {
+				return TestRunUtils.fillFunction(element, index);
+			}    
+		]]>
+	</fx:Script>
+	
+	<grauge:PieGrauge id="pieGrauge" top="2" left="7" right="7" height="22" pieHeight="48" pieWidth="48" 
+					  dataTipFunction="{displayStatus}" field="count" dataProvider="{data.statistics}" text="{displayText(data.statistics)}" fillFunction="{fillFunction}" />
+	
+</s:GridItemRenderer>

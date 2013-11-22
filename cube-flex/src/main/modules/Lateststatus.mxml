@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This file is compiled as flex module, because flash builder canot 
+compile directly to target, this file must be under the root package -->
+
+<PodContentBase xmlns="presentation.view.dashboard.*"
+				xmlns:fx="http://ns.adobe.com/mxml/2009"
+			    xmlns:s="library://ns.adobe.com/flex/spark"
+			    xmlns:mx="library://ns.adobe.com/flex/mx"
+			    xmlns:parsley="http://www.spicefactory.org/parsley"
+				implements="presentation.view.dashboard.IRefreshablePod">
+		
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<parsley:FastInject property="testRunResultsController" type="{TestRunResultsController}"/> 
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import application.controller.testrun.TestRunResultsController;
+			import application.model.testrun.RunStatusPerDateList;
+			
+			import mx.charts.ChartItem;
+			import mx.collections.ArrayList;
+			import mx.events.FlexEvent;
+			import mx.graphics.IFill;
+			
+			import presentation.model.admin.testrun.TestRunUtils;
+
+			
+			[Bindable]
+			public var testRunResultsController:TestRunResultsController;
+	
+			[Bindable]public var innerData:ArrayList = null; // Chart data provider			
+			
+			override protected function onCreationComplete(e:FlexEvent):void{
+				super.onCreationComplete(e);
+				
+				refreshData();
+			}
+			
+			override public function refreshData():void{
+				testRunResultsController.getStatusByDate(toModel);			
+			}
+			
+			private function toModel(xml:XMLNode):void {
+				var statuses:RunStatusPerDateList = testRunResultsController.getFlexXBEngineInstance().deserialize(new XML(xml), RunStatusPerDateList) as RunStatusPerDateList;
+				
+				innerData =  statuses.statuses;
+			}
+			
+			private function fillFunction (item:ChartItem, index:Number):IFill { 
+				return TestRunUtils.fillFunction(item, index);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:HGroup width="100%" height="100%">
+		<mx:LineChart width="100%" height="100%" id="linechart" color="0x323232" dataProvider="{innerData}" showDataTips="true">
+			
+			<mx:horizontalAxis>
+				<mx:CategoryAxis categoryField="date"/>
+			</mx:horizontalAxis>
+			
+			<mx:series>
+				<mx:LineSeries displayName="Idle" form="curve" yField="idle">
+					<mx:lineStroke>
+						<mx:SolidColorStroke alpha="1" color="{TestRunUtils.IDLE_COLOR.color}"
+											 weight="3"/>
+					</mx:lineStroke>          
+				</mx:LineSeries>
+				<mx:LineSeries displayName="Passed" form="curve" yField="passed">
+					<mx:lineStroke>
+						<mx:SolidColorStroke alpha="1" color="{TestRunUtils.PASSED_COLOR.color}"
+											 weight="3"/>
+					</mx:lineStroke>
+				</mx:LineSeries>
+				<mx:LineSeries displayName="Failed" form="curve" yField="failed">
+					<mx:lineStroke>
+						<mx:SolidColorStroke alpha="1" color="{TestRunUtils.FAILED_COLOR.color}"
+											 weight="3"/>
+					</mx:lineStroke>
+				</mx:LineSeries>
+			</mx:series>
+		</mx:LineChart>
+		
+		<mx:Legend color="0x323232" dataProvider="{linechart}"/>
+	</s:HGroup>
+</PodContentBase>	
+

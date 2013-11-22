@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans:beans xmlns:sec="http://www.springframework.org/schema/security" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		                http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+             	 		http://www.springframework.org/schema/security 
+             	 		http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+
+	<sec:http pattern="/*/public/**" security="none" />
+	<sec:http pattern="/jsf/include/**" security="none" />
+	<sec:http pattern="/resources/**" security="none" />
+	<sec:http pattern="/javax.faces.resource/**" security="none" />
+
+	<sec:http auto-config="true" once-per-request="true" use-expressions="true">
+		<sec:intercept-url pattern="/*/private/**" access="hasRole('ROLE_ADMIN') or hasRole('USR_ADMIN')" />
+		<sec:intercept-url pattern="/*/protected/**" access="hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')" />
+		<sec:intercept-url pattern="/**" access="hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')" />
+
+		<sec:session-management invalid-session-url="/jsf/public/login.xhtml">
+			<sec:concurrency-control max-sessions="10" expired-url="/jsf/public/login.xhtml" />
+		</sec:session-management>
+
+		<sec:logout logout-success-url="/jsf/public/login.xhtml" />
+
+		<sec:form-login login-page="/jsf/public/login.xhtml" default-target-url="/index.html"
+			always-use-default-target="true" authentication-failure-handler-ref="authenticationFailureHandler" />
+
+		<sec:http-basic />
+		<sec:anonymous />
+		<!-- Support remember me cookie service, default cookie timeout 2 weeks. -->
+		<sec:remember-me key="JatakaSource-TestCube-RememberMe-Authentication-Key" user-service-ref="userDetailsService"/>
+
+	</sec:http>
+
+	<!-- Set authentication Failure message according to exception class -->
+	<beans:bean id="authenticationFailureHandler"
+		class="org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler">
+		<beans:property name="exceptionMappings">
+			<beans:map>
+				<beans:entry key="org.springframework.security.authentication.AuthenticationServiceException" value="/jsf/public/login.xhtml?error_message=BAD_CREDENTIALS"></beans:entry>
+				<beans:entry key="org.springframework.security.access.AccessDeniedException" value="/jsf/public/login.xhtml?error_message=BAD_CREDENTIALS"></beans:entry>
+				<beans:entry key="org.springframework.security.authentication.BadCredentialsException" value="/jsf/public/login.xhtml?error_message=BAD_CREDENTIALS"></beans:entry>
+				<beans:entry key="org.springframework.security.authentication.DisabledException" value="/jsf/public/login.xhtml?error_message=USER_IS_DISABLE"></beans:entry>
+				<beans:entry key="org.springframework.security.authentication.LockedException" value="/jsf/public/login.xhtml?error_message=USER_IS_LOCKED"></beans:entry>
+				<beans:entry key="org.springframework.security.authentication.AccountExpiredException" value="/jsf/public/login.xhtml?error_message=USER_IS_EXPIRED"></beans:entry>
+				<beans:entry key="org.springframework.security.authentication.CredentialsExpiredException" value="/jsf/public/login.xhtml?error_message=USER_IS_EXPIRED"></beans:entry>
+			</beans:map>
+		</beans:property>
+		<beans:property name="defaultFailureUrl" value="/jsf/public/login.xhtml" />
+		<beans:property name="useForward" value="true" />
+	</beans:bean>
+
+	<!-- Add support for getting user from database -->
+	<sec:authentication-manager alias="authenticationManager">
+		<sec:authentication-provider ref="daoAuthenticationProvider" />
+	</sec:authentication-manager>
+
+</beans:beans>

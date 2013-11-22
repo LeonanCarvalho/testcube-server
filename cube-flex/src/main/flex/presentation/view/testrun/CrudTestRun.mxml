@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:CrudPanel xmlns:fx="http://ns.adobe.com/mxml/2009"
+				  xmlns:s="library://ns.adobe.com/flex/spark"
+				  xmlns:mx="library://ns.adobe.com/flex/mx"
+				  xmlns:panels="presentation.view.panels.*"
+				  xmlns:parsley="http://www.spicefactory.org/parsley"
+				  xmlns:code="http://code.google.com/p/flexlib/"
+				  xmlns:flexiframe="http://code.google.com/p/flex-iframe/"
+				  xmlns:crud="presentation.view.crud.*"
+				  xmlns:html="presentation.view.html.*"
+				  xmlns:testcase="presentation.view.testcase.*"
+				  width="1000" height="760">
+	
+	<fx:Script>
+		<![CDATA[
+			import application.model.products.Build;
+			import application.model.products.Environment;
+			import application.model.testcase.TestCase;
+			import application.model.testrun.TestRun;
+			import application.model.users.User;
+			import application.model.versions.Version;
+			
+			import infrastructure.TestRunConfig;
+			
+			import mx.events.IndexChangedEvent;
+			import mx.events.ItemClickEvent;
+			import mx.events.ValidationResultEvent;
+			
+			import presentation.events.panels.searchpanel.LinkBarItemClickEvent;
+			import presentation.model.testrun.CrudTestRunPM;
+			import presentation.model.testrun.TestResultSelectedEvent;
+			import presentation.model.testrun.TestRunResultsPM;
+			
+			import spark.events.IndexChangeEvent;
+			
+			import utils.ComboBoxUtils;
+
+			
+			[Bindable]
+			public var pModel:CrudTestRunPM;
+			[Bindable]
+			public var testRunResultsPM:TestRunResultsPM;
+			[Bindable]
+			private var selectedTestCase:TestCase;
+			
+			[Embed("/images/testrun/testruns-16.png")]
+			private static const TEST_RUN_SMALL:Class;
+			[Embed("/images/testcase/testcases-16.png")]
+			private static const TEST_CASE_DETAILS:Class;
+			[Embed("/images/testrun/info-16.png")]
+			private static const TEST_RUN_INFO:Class;
+			
+			override public function injectionComplete(): void {
+				super.pm = pModel;
+				pModel.validateFunction = validate;
+				pModel.setDomainObject(getDomainObject());
+				
+				// Load versions/builds/environments can be called only after we set domainObject to pModel
+				pModel.loadVersions();
+				pModel.loadBuilds();
+				pModel.loadEnvironments();
+			}
+
+			public function resultsInjectionComplete(): void {
+				// TestRunResultsPM should also know about the selected TestRun
+				if (getDomainObject()!=null)
+					testRunResultsPM.testRun = (getDomainObject() as TestRun);
+			}
+			
+			public function linkBarItemClick(event:ItemClickEvent):void {
+				pModel.dispatcher(new LinkBarItemClickEvent(event.item.eventType, testRunResultsPM));
+			}
+			
+			// Function to validate data and submit it to the server. 
+			private function validate():Boolean {			
+				var vResult:ValidationResultEvent;
+				
+				// Validate the required fields.  
+				if (summaryValid.validate().type==ValidationResultEvent.INVALID)
+					return false;
+				if (versionValidator.validate().type==ValidationResultEvent.INVALID) 
+					return false;
+				
+				return true;
+			}
+			
+			private function versionChangeHandler(evt:IndexChangeEvent):void {
+				if (ComboBoxUtils.validateSelection(versionCombo, Version))
+					pModel.testRun.version = versionCombo.selectedItem;
+				else
+					pModel.testRun.version = null;
+			}
+			
+			private function assigneeChangeHandler(evt:IndexChangeEvent):void {
+				if (ComboBoxUtils.validateSelection(assigneeCombo, User))
+					pModel.testRun.assignee = assigneeCombo.selectedItem;
+				else 
+					pModel.testRun.assignee = null;
+			}
+			
+			private function buildChangeHandler(evt:IndexChangeEvent):void {
+				if (ComboBoxUtils.validateSelection(buildCombo, Build))
+					pModel.testRun.build = buildCombo.selectedItem;
+				else
+					pModel.testRun.build = null;
+			}
+			
+			private function environmentChangeHandler(evt:IndexChangeEvent):void {
+				if (ComboBoxUtils.validateSelection(environmentCombo, Environment))
+					pModel.testRun.environment = environmentCombo.selectedItem;
+				else 
+					pModel.testRun.environment = null;
+			}
+			
+			[MessageHandler]
+			public function testResultChangeHandler(event:TestResultSelectedEvent):void {
+				// Not dispatched from this instance
+				if (event.getSubscriber()==null || event.getSubscriber() != testRunResultsPM)
+					return;
+				
+				// Set selected testcase
+				this.selectedTestCase = event.getTestCase();
+				
+				this.setDocuments();
+				
+				if (event.getSelected()){
+					this.crudTab.selectedIndex = 1;
+				}
+			}
+			
+			private function setDocuments():void {
+				setAction();
+				setExpected();
+			}
+			
+			private function setExpected():void {
+				if (expectedEditor==null) return;
+				
+				if (selectedTestCase!=null)
+					expectedEditor.html = selectedTestCase.expected;
+				else
+					expectedEditor.html = null;
+			}
+			
+			private function setAction():void {
+				if (actionEditor==null) return;
+				
+				if (selectedTestCase!=null)
+					actionEditor.html = selectedTestCase.action;
+				else
+					actionEditor.html = null;
+			}
+			
+			private function getExpectedHtml():void {
+				this.selectedTestCase.expected = expectedEditor.html;
+			}
+			
+			private function getActionHtml():void {
+				this.selectedTestCase.action = actionEditor.html;
+			}
+			
+			protected function tabChangeHandler(event:IndexChangedEvent):void{
+				setDocuments();
+			}
+			
+			
+			override public function onSaveSuccess():void {
+				// Update DominObject from pModel to UI
+				setDomainObject(pModel.testRun);
+				// Notify testRunResultsPM for new DomainObject
+				resultsInjectionComplete();
+				
+				// Update titleLinkBar (Status buttons) for status change
+				titleLinkBar.visible = pModel.isUpdateState();
+				
+				testRunResultsPM.search(testRunResultsPM.freeText);
+			}
+			
+			override public function onSaveNewSuccess():void {
+				versionCombo.selectedIndex = ComboBoxUtils.NON_SELECTED_INDEX;
+				assigneeCombo.selectedIndex = ComboBoxUtils.NON_SELECTED_INDEX;
+				buildCombo.selectedIndex = ComboBoxUtils.NON_SELECTED_INDEX;
+				environmentCombo.selectedIndex = ComboBoxUtils.NON_SELECTED_INDEX;
+				
+				// Update All HTML Documents
+				setDocuments();
+	
+				// Update DominObject from pModel to UI
+				setDomainObject(pModel.testRun);
+				// Notify testRunResultsPM for new DomainObject
+				resultsInjectionComplete();
+
+				// Update titleLinkBar (Status buttons) for status change
+				titleLinkBar.visible = pModel.isUpdateState();
+				
+				testRunResultsPM.search(testRunResultsPM.freeText);
+			}
+		]]>
+		
+	</fx:Script>
+
+	<fx:Declarations>	
+		<parsley:Configure/>
+		
+		<parsley:ContextBuilder config="{TestRunConfig}"/>
+		
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<parsley:FastInject injectionComplete="injectionComplete()" property="pModel"
+							type="{CrudTestRunPM}"/>
+		<parsley:FastInject injectionComplete="resultsInjectionComplete()"
+							property="testRunResultsPM" type="{TestRunResultsPM}"/>
+		
+		<mx:StringValidator id="summaryValid" maxLength="100" property="text" required="true"
+							source="{summaryText}"/>
+		
+		<mx:NumberValidator id="versionValidator"
+							lowerThanMinError="@Resource(bundle='testrun', key='testruns.crud.version.notselected')"
+							minValue="0" property="selectedIndex" source="{versionCombo}"/>
+		
+		<fx:Array id="extraButtons">
+			<fx:Object label="{ResourceManager.getInstance().getString('testrun', 'testruns.status.idle')}"
+					   eventType="{TestRunResultsPM.TESTRUN_RESULT_IDLE_EVENT}"
+					   icon="@Embed('/images/testrun/runstatus/idle-16.png')"/>
+			<fx:Object label="{ResourceManager.getInstance().getString('testrun', 'testruns.status.running')}"
+					   eventType="{TestRunResultsPM.TESTRUN_RESULT_RUNNING_EVENT}"
+					   icon="@Embed('/images/testrun/runstatus/running-16.png')"/>
+			<fx:Object label="{ResourceManager.getInstance().getString('testrun', 'testruns.status.paused')}"
+					   eventType="{TestRunResultsPM.TESTRUN_RESULT_PAUSED_EVENT}"
+					   icon="@Embed('/images/testrun/runstatus/paused-16.png')"/>
+			<fx:Object label="{ResourceManager.getInstance().getString('testrun', 'testruns.status.stopped')}"
+					   eventType="{TestRunResultsPM.TESTRUN_RESULT_STOP_EVENT}"
+					   icon="@Embed('/images/testrun/runstatus/stopped-16.png')"/>
+			<fx:Object label="{ResourceManager.getInstance().getString('testrun', 'testruns.status.passed')}"
+					   eventType="{TestRunResultsPM.TESTRUN_RESULT_PASSED_EVENT}"
+					   icon="@Embed('/images/testrun/runstatus/passed-16.png')"/>
+			<fx:Object label="{ResourceManager.getInstance().getString('testrun', 'testruns.status.failed')}"
+					   eventType="{TestRunResultsPM.TESTRUN_RESULT_FAILED_EVENT}"
+					   icon="@Embed('/images/testrun/runstatus/failed-16.png')"/>
+			<fx:Object label="{ResourceManager.getInstance().getString('testrun', 'testruns.status.blocked')}"
+					   eventType="{TestRunResultsPM.TESTRUN_RESULT_BLOCKED_EVENT}"
+					   icon="@Embed('/images/testrun/runstatus/blocked-16.png')"/>
+			<fx:Object label="{ResourceManager.getInstance().getString('testrun', 'testruns.status.error')}"
+					   eventType="{TestRunResultsPM.TESTRUN_RESULT_ERROR_EVENT}"
+					   icon="@Embed('/images/testrun/runstatus/error-16.png')"/>
+		</fx:Array>
+		
+	</fx:Declarations>
+	
+	<panels:contentPanel>
+		<s:Group width="100%" height="100%">
+			<panels:CrudTab id="crudTab" change="tabChangeHandler(event)">
+				<mx:VBox id="infoTab"
+						 label="@Resource(bundle='testrun', key='testruns.crud.tab.info')"
+						 icon="{TEST_RUN_SMALL}">
+					<s:BorderContainer width="100%" height="100%" backgroundColor="#F4F4F4"
+									   borderVisible="false">
+					
+						<panels:FormHeading label="@Resource(bundle='testrun', key='testruns.crud.header.info')"/>
+						
+						<s:VGroup top="22" width="100%" height="100%">
+							<s:HGroup width="100%" height="60">
+								<s:Form id="leftForm" width="50%" height="100%">
+									<s:layout>
+										<s:FormLayout id="leftFormLay" gap="-10" paddingLeft="-10"/>
+									</s:layout>
+									
+									<crud:FormItem label="@Resource(bundle='testrun', key='testruns.crud.version')"
+												   required="true">
+										<s:ComboBox id="versionCombo" width="150"
+													change="versionChangeHandler(event)"
+													dataProvider="{pModel.versions}"
+													labelField="name"
+													prompt="@Resource(bundle='testrun', key='testruns.crud.version.selection')"
+													selectedIndex="{pModel.versionSelectedIndex}"/>	
+									</crud:FormItem>
+									
+									<crud:FormItem label="@Resource(bundle='testrun', key='testruns.crud.assignee')">
+										<s:ComboBox id="assigneeCombo" width="220"
+													change="assigneeChangeHandler(event)"
+													dataProvider="{pModel.users}"
+													labelField="username"
+													prompt="@Resource(bundle='testrun', key='testruns.crud.assignee.selection')"
+													selectedIndex="{pModel.assigneeSelectedIndex}"/>	
+									</crud:FormItem>
+		
+								</s:Form>	
+								
+								<s:Form id="rightForm" width="50%" height="100%">
+									<s:layout>
+										<s:FormLayout id="rightFormLay" gap="-10" paddingLeft="-10"/>
+									</s:layout>
+									
+									<crud:FormItem label="@Resource(bundle='testrun', key='testruns.crud.build')">
+										<s:ComboBox id="buildCombo" width="150"
+													change="buildChangeHandler(event)"
+													dataProvider="{pModel.builds}" labelField="name"
+													prompt="@Resource(bundle='testrun', key='testruns.crud.build.selection')"
+													selectedIndex="{pModel.buildSelectedIndex}"/>	
+									</crud:FormItem>
+									
+									<crud:FormItem label="@Resource(bundle='testrun', key='testruns.crud.environment')">
+										<s:ComboBox id="environmentCombo" width="220"
+													change="environmentChangeHandler(event)"
+													dataProvider="{pModel.environments}"
+													labelField="name"
+													prompt="@Resource(bundle='testrun', key='testruns.crud.environment.selection')"
+													selectedIndex="{pModel.environmentSelectedIndex}"/>	
+									</crud:FormItem>
+		
+								</s:Form>			
+							</s:HGroup>
+						
+							<s:Group width="100%" height="40">
+								<s:Form id="bottomForm" width="100%" height="30">
+									<s:layout>
+										<s:FormLayout id="bottomFormLay" gap="-10" paddingLeft="-10"/>
+									</s:layout>
+									
+									<crud:FormItem label="@Resource(bundle='testrun', key='testruns.crud.summary')"
+												   required="true">
+										<s:TextInput id="summaryText" width="100%" height="22"
+													 showErrorSkin="true" showErrorTip="true"
+													 text="@{pModel.testRun.summary}"/>
+									</crud:FormItem>
+								</s:Form>
+							</s:Group>
+							
+							<s:VGroup width="100%" height="100%" paddingLeft="14" paddingTop="16">
+								<s:Label fontWeight="bold" text="Test Cases:"/>
+								<panels:HeaderPanel id="mainPaenl" width="100%" height="100%"
+													title="Filter cases">
+									<s:Group width="100%" height="100%">
+											<panels:SearchPanel id="searchRunResult" width="100%"
+																pmodel="{testRunResultsPM}">
+												
+												<panels:additionalTitleBarPanel>								
+													<s:HGroup id="extraRunButtons"
+															  verticalAlign="middle">
+														<mx:LinkBar id="titleLinkBar"
+																	visible="{pModel.isUpdateState()}"
+																	borderStyle="none"
+																	borderVisible="false"
+																	contentBackgroundAlpha="0"
+																	contentBackgroundColor="#0473B2"
+																	dataProvider="{extraButtons}"
+																	iconField="icon"
+																	itemClick="linkBarItemClick(event)"/>
+													</s:HGroup>
+												</panels:additionalTitleBarPanel>
+											
+											</panels:SearchPanel>
+									</s:Group>
+								
+								</panels:HeaderPanel>
+							</s:VGroup>	
+							
+						</s:VGroup>
+					</s:BorderContainer>
+				</mx:VBox>	
+	
+				<mx:VBox id="caseDetails"
+						 label="@Resource(bundle='testrun', key='testruns.crud.tab.caseDetails')"
+						 icon="{TEST_CASE_DETAILS}">
+					<s:BorderContainer width="100%" height="100%" backgroundColor="#F4F4F4"
+									   borderVisible="false">
+						
+						<panels:FormHeading label="@Resource(bundle='testrun', key='testruns.crud.tab.caseDetails')"/>
+						
+						<s:HGroup top="52" width="100%" height="100%">
+							<s:VGroup width="50%" height="100%" paddingLeft="10" paddingRight="2" paddingBottom="3">
+								<s:Label fontWeight="bold" text="@Resource(bundle='testrun', key='testruns.crud.action')"/>
+								<html:HtmlEditor id="actionEditor" width="100%" height="100%" enabled="false" headerHeight="52"/>
+							</s:VGroup>
+							
+							<s:VGroup width="50%" height="100%" paddingLeft="10" paddingRight="2" paddingBottom="3">
+								<s:Label fontWeight="bold" text="@Resource(bundle='testrun', key='testruns.crud.expected')"/>
+								<html:HtmlEditor id="expectedEditor" width="100%" height="100%" enabled="false" headerHeight="52"/>
+							</s:VGroup>
+						</s:HGroup>
+					</s:BorderContainer>						
+				</mx:VBox>	
+				
+				<mx:VBox id="infoNotes"
+						 label="@Resource(bundle='testrun', key='testruns.crud.tab.notes')"
+						 icon="{TEST_RUN_INFO}">
+					<s:Group width="100%" height="100%">
+						<s:TextArea width="100%" height="100%" text="@{pModel.testRun.notes}"/>
+					</s:Group>
+				</mx:VBox>	
+			</panels:CrudTab>	
+		</s:Group>
+	</panels:contentPanel>
+</panels:CrudPanel>

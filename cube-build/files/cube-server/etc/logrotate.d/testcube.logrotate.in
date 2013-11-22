@@ -1,0 +1,9 @@
+@SERVER_LOGS@/*log
+{
+    copytruncate
+    daily
+    rotate 8
+    size 100M
+    compress
+    missingok
+}

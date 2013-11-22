@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				autoDrawBackground="true" xmlns:grauge="presentation.view.grauge.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.charts.ChartItem;
+			import mx.charts.HitData;
+			import mx.collections.ArrayCollection;
+			import mx.graphics.IFill;
+			
+			import presentation.model.admin.testrun.TestRunUtils;
+			
+			import utils.string.StringUtils;
+			
+			private function displayStatus(data:HitData):String {
+				return TestRunUtils.displayStatus(data);
+			}
+			
+			private function displayText(statistics:ArrayCollection):String{
+				if (data==null)
+					return StringUtils.EMPTY;
+				
+				return TestRunUtils.displayText(statistics);
+			}
+			
+			private function fillFunction(element:ChartItem, index:Number):IFill {
+				return TestRunUtils.fillFunction(element, index);
+			}    
+		]]>
+	</fx:Script>
+	
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="hovered"/>
+		<s:State name="selected" />
+	</s:states>
+	
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	
+	<s:HGroup verticalAlign="middle" paddingBottom="1" paddingTop="1" width="100%">
+		<s:HGroup paddingBottom="1" paddingTop="1" paddingLeft="8" width="140" maxWidth="200">
+			<s:Label text="{data.summary}" toolTip="{data.notes}" paddingTop="2" buttonMode="false" width="100%"/>
+		</s:HGroup>
+		
+		<s:HGroup paddingBottom="1" paddingTop="1" paddingLeft="8" width="80" maxWidth="200">
+			<s:Label text="@Resource(bundle='dashboard', key='dashboard.recentruns.build.label')" />
+			<s:Label text="{data.build.name}" toolTip="{data.build.description}" textAlign="left" fontWeight="bold" />
+		</s:HGroup>
+		
+		<s:HGroup paddingBottom="1" paddingTop="1" paddingLeft="8" width="140" maxWidth="200"> 
+			<s:Label text="@Resource(bundle='dashboard', key='dashboard.recentruns.assignee.label')" />
+			<s:Label text="{data.assignee.username}" toolTip="{data.assignee.username}" textAlign="left" fontWeight="bold" />
+		</s:HGroup>
+
+		<s:HGroup paddingBottom="1" paddingTop="1" paddingRight="8" width="200"> 
+			<grauge:PieGrauge id="pieGrauge" top="2" left="7" right="7" height="22" pieHeight="48" pieWidth="48"
+							  dataTipFunction="{displayStatus}" field="count" dataProvider="{data.statistics}" text="{displayText(data.statistics)}" fillFunction="{fillFunction}" />
+		</s:HGroup>
+
+	</s:HGroup>
+
+</s:ItemRenderer>

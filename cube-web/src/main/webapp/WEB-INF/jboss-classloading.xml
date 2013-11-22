@@ -1,0 +1,3 @@
+<classloading xmlns="urn:jboss:classloading:1.0" name="cube-web.war" domain="jatakasource.testcube" export-all="NON_EMPTY"
+	import-all="false" parent-first="false" top-level-classloader="true">
+</classloading>

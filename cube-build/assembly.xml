@@ -1,0 +1,84 @@
+<assembly>
+	<formats>
+		<format>tar.gz</format>
+	</formats>
+
+	<includeBaseDirectory>true</includeBaseDirectory>
+
+	<dependencySets>
+		<!-- Add wars -->
+		<dependencySet>
+			<outputDirectory>/cube-server/webapps</outputDirectory>
+			<outputFileNameMapping>cube-web.war</outputFileNameMapping>
+			<includes>
+				<include>org.jatakasource.testcube:cube-web</include>
+			</includes>
+			<useTransitiveDependencies>false</useTransitiveDependencies>
+			<fileMode>0755</fileMode>
+		</dependencySet>
+
+
+		<!-- Create common lib's folder -->
+		<dependencySet>
+			<outputDirectory>/cube-server/lib</outputDirectory>
+			<includes>
+				<include>org.jatakasource.testcube:cube-svc-api</include>
+				<include>org.jatakasource.testcube:cube-svc-impl</include>
+			</includes>
+			<useTransitiveFiltering>true</useTransitiveFiltering>
+		</dependencySet>
+
+		<!-- Add cube-build without any transitive dependencies -->
+		<dependencySet>
+			<outputDirectory>/cube-server/standalone/lib</outputDirectory>
+			<includes>
+				<include>org.jatakasource.testcube:cube-build</include>
+			</includes>
+			<useTransitiveFiltering>false</useTransitiveFiltering>
+		</dependencySet>
+
+		<!-- Create common lib's folder -->
+		<dependencySet>
+			<outputDirectory>/cube-server/standalone/lib</outputDirectory>
+			<includes>
+				<include>org.eclipse.jetty:jetty-server</include>
+				<include>org.eclipse.jetty:jetty-xml</include>
+				<include>org.eclipse.jetty:jetty-webapp</include>
+				<include>org.eclipse.jetty:jetty-ajp</include>
+				<include>javax.servlet.jsp:jsp-api</include>
+			</includes>
+
+			<useTransitiveFiltering>true</useTransitiveFiltering>
+		</dependencySet>
+
+		<!-- Add maintenance library -->
+		<dependencySet>
+			<outputDirectory>/cube-server/maintenance/lib</outputDirectory>
+			<includes>
+				<include>org.jatakasource.testcube:cube-data</include>
+			</includes>
+			<useTransitiveFiltering>true</useTransitiveFiltering>
+		</dependencySet>
+	</dependencySets>
+
+	<fileSets>
+		<!-- Copy installation Scripts -->
+		<fileSet>
+			<directory>${resources.home}/install</directory>
+			<outputDirectory>/install</outputDirectory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+			<fileMode>755</fileMode>
+		</fileSet>
+
+		<fileSet>
+			<directory>${resources.home}/cube-server</directory>
+			<outputDirectory>/cube-server</outputDirectory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+		</fileSet>
+	</fileSets>
+
+</assembly>

@@ -1,0 +1,13 @@
+[Unit]
+Description=JatakaSource testcube-server daemon
+After=syslog.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=forking
+PIDFile=/var/run/jatakasource/testcube/server/server/testcube-server.pid
+ExecStart=/usr/share/jatakasource/testcube/server/bin/start-server.sh --instance=server
+ExecReload=/usr/share/jatakasource/testcube/server/bin/start-server.sh --instance=server
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

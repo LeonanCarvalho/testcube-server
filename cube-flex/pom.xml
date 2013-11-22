@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.jatakasource.commons.flex</groupId>
+		<artifactId>jataka-flex-parent</artifactId>
+		<version>1.1.0</version>
+	</parent>
+
+	<groupId>org.jatakasource.testcube</groupId>
+	<artifactId>cube-flex</artifactId>
+	<packaging>swf</packaging>
+	<version>1.1.0</version>
+
+	<name>CUBE ${project.artifactId} :: Flex Client</name>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.sonatype.flexmojos</groupId>
+				<artifactId>flexmojos-maven-plugin</artifactId>
+				<version>${flex.mojos.version}</version>
+				<extensions>true</extensions>
+
+				<configuration>
+					<sourceFile>presentation/view/main/cube.mxml</sourceFile>
+
+					<modules>
+						<module>Activities.mxml</module>
+						<module>Lateststatus.mxml</module>
+						<module>Recentruns.mxml</module>
+					</modules>
+
+					<defines>
+					 	<property>
+						 	<name>CONFIG::DEBUGIP</name>
+						 	<value>"127.0.0.1"</value>
+					 	</property>
+				 	</defines> 
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.jatakasource.commons</groupId>
+			<artifactId>jataka-common-flex</artifactId>
+			<version>1.1.0</version>
+			<type>swc</type>
+		</dependency>
+
+		<dependency>
+			<groupId>flexible</groupId>
+			<artifactId>dashboard-css</artifactId>
+			<version>1.0.0</version>
+			<type>swc</type>
+		</dependency>
+
+		<dependency>
+			<groupId>flexible</groupId>
+			<artifactId>dashboard-assets-embed</artifactId>
+			<version>1.0.0</version>
+			<type>swc</type>
+		</dependency>
+	</dependencies>
+
+</project>
+

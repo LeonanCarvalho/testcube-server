@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   xmlns:panels="presentation.view.panels.*"
+				   xmlns:parsley="http://www.spicefactory.org/parsley"
+				   xmlns:lists="presentation.view.lists.*"
+				   xmlns:admin="presentation.view.admin.*"
+				   xmlns:testcase="presentation.view.admin.testcase.*"
+				   xmlns:testrun="presentation.view.admin.testrun.*"
+				   xmlns:testplan="presentation.view.admin.testplan.*"
+				   initialize="postInitialize()"
+				   width="100%" height="100%" borderVisible="false" backgroundColor="#F7F7F7"> 
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<parsley:FastInject property="pModel" type="{AdministratorPM}" /> 
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.core.IFlexDisplayObject;
+			
+			import presentation.model.admin.AdministratorPM;
+			import presentation.view.lists.IconListItemClickEvent;
+			
+			[Bindable]
+			public var pModel:AdministratorPM = null;
+			
+			public function postInitialize():void{			
+				this.addEventListener(AdministratorPM.EVENT_TYPE, onNavigationChanged);
+			}
+			
+			public function onNavigationChanged(event:IconListItemClickEvent): void{
+				var selectedChild:DisplayObject = centerPanel.getChildByName(event.getButtonName().toLocaleLowerCase());
+				if (selectedChild!=null){
+					var selectedIndex:int = centerPanel.getChildIndex(selectedChild);
+					centerPanel.selectedIndex = selectedIndex;
+				}
+			}
+			
+			public function onHomeClick(event:MouseEvent):void{
+				centerPanel.selectedIndex = 0;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:HorizontalLayout paddingLeft="5" paddingRight="5" paddingTop="6" paddingBottom="6"/>
+	</s:layout>
+	
+	<s:BorderContainer borderVisible="false" width="100%" height="100%" direction="{pModel.getDirection()}">
+		<s:layout>
+			<s:HorizontalLayout/>
+		</s:layout>
+		
+		<mx:HDividedBox width="100%" height="100%">
+			<panels:HeaderPanel id="shortcuts" width="200" maxWidth="400" height="100%" cornerRadiusLeft="5"
+								title="@Resource(bundle='admin', key='admin.administrator.shortcuts.title')" 
+								displayCloseButton="true" 
+								closeButtonImageSource="@Embed('/images/admin/back-24.png')"
+								closeButtonToolTip="@Resource(bundle='admin', key='admin.administrator.shortcuts.icon.tooltip')"
+								closeButtonClick="onHomeClick">
+				<s:VGroup paddingTop="10" width="100%" height="100%"> 
+					<s:List id="mainList" minWidth="0" width="100%" height="100%" itemRenderer="presentation.view.admin.rendered.AdminIconListItemRendered" borderVisible="false">
+						<s:ArrayCollection>
+							<lists:IconListItem name="users" text="@Resource(bundle='admin', key='admin.administrator.users.title')" image="@Embed('/images/admin/users-24.png')" lastItem="true"/>
+							<lists:IconListItem name="products" text="@Resource(bundle='admin', key='admin.administrator.products.title')" image="@Embed('/images/admin/products-24.png')" />
+							<lists:IconListItem name="components" text="@Resource(bundle='admin', key='admin.administrator.components.title')" image="@Embed('/images/admin/components-24.png')"/>
+							<lists:IconListItem name="categories" text="@Resource(bundle='admin', key='admin.administrator.categories.title')" image="@Embed('/images/admin/categories-24.png')"/>
+							<lists:IconListItem name="environments" text="@Resource(bundle='admin', key='admin.administrator.environments.title')" image="@Embed('/images/admin/environments-24.png')"/>
+							<lists:IconListItem name="builds" text="@Resource(bundle='admin', key='admin.administrator.builds.title')" image="@Embed('/images/admin/builds-24.png')"/>
+							
+							<lists:IconListItem name="versions" text="@Resource(bundle='admin', key='admin.administrator.versions.title')" image="@Embed('/images/admin/versions-24.png')" lastItem="true"/>
+							<lists:IconListItem name="casepriorities" text="@Resource(bundle='admin', key='admin.administrator.casepriorities.title')" image="@Embed('/images/admin/casepriorities-24.png')"/>
+							<lists:IconListItem name="casestatuses" text="@Resource(bundle='admin', key='admin.administrator.casestatuses.title')" image="@Embed('/images/admin/casestatuses-24.png')"/>
+							<lists:IconListItem name="runstatuses" text="@Resource(bundle='admin', key='admin.administrator.runstatuses.title')" image="@Embed('/images/admin/runstatuses-32.png')"/>
+							<lists:IconListItem name="plantypes" text="@Resource(bundle='admin', key='admin.administrator.plantypes.title')" image="@Embed('/images/admin/plantypes-24.png')"/>
+							 
+						</s:ArrayCollection>
+					</s:List>	
+						
+				</s:VGroup>
+			</panels:HeaderPanel> 
+			
+			<s:Group width="100%" height="100%">
+				<mx:ViewStack id="centerPanel" textFieldClass="mx.core.UIFTETextField" width="100%" height="100%" selectedIndex="0">				
+					<s:NavigatorContent id="thumbnail" name="thumbnail" width="100%" height="100%">
+						<admin:Thumbnail/>
+					</s:NavigatorContent>
+					<s:NavigatorContent name="users" width="100%" height="100%">
+						<admin:Users/>
+					</s:NavigatorContent>
+					<s:NavigatorContent name="products" width="100%" height="100%">
+						<admin:Products/>
+					</s:NavigatorContent>
+					<s:NavigatorContent name="components" width="100%" height="100%">
+						<admin:Components/>
+					</s:NavigatorContent>
+					<s:NavigatorContent name="categories" width="100%" height="100%">
+						<admin:Categories/>
+					</s:NavigatorContent>
+					<s:NavigatorContent name="environments" width="100%" height="100%">
+						<admin:Environments/>
+					</s:NavigatorContent>
+					<s:NavigatorContent name="builds" width="100%" height="100%">
+						<admin:Builds/>
+					</s:NavigatorContent>
+					
+					<s:NavigatorContent name="versions" width="100%" height="100%">
+						<admin:Versions/>
+					</s:NavigatorContent>
+					<s:NavigatorContent name="casepriorities" width="100%" height="100%">
+						<testcase:CasePriorities/>
+					</s:NavigatorContent>
+					<s:NavigatorContent name="casestatuses" width="100%" height="100%">
+						<testcase:CaseStatuses/>
+					</s:NavigatorContent>
+					<s:NavigatorContent name="runstatuses" width="100%" height="100%">
+						<testrun:RunStatuses/>
+					</s:NavigatorContent>
+					<s:NavigatorContent name="plantypes" width="100%" height="100%">
+						<testplan:PlanTypes/>
+					</s:NavigatorContent>
+				</mx:ViewStack>						
+			</s:Group>
+		</mx:HDividedBox>
+	</s:BorderContainer>
+		
+</s:BorderContainer>

@@ -1,0 +1,9 @@
+name,description,order,status
+"Idle","Idle",100,IDLE
+"Running","Running",200,RUNNING
+"Paused","Paused",300,PAUSED
+"Stopped","Stopped",400,STOPPED
+"Passed","Passed",500,PASSED
+"Failed","Failed",600,FAILED
+"Blocked","Blocked",700,BLOCKED
+"Error","Error",800,ERROR

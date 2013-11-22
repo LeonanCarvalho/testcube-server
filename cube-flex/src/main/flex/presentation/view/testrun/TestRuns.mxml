@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				   xmlns:s="library://ns.adobe.com/flex/spark"
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   xmlns:panels="presentation.view.panels.*"
+				   xmlns:parsley="http://www.spicefactory.org/parsley"
+				   xmlns:lists="presentation.view.lists.*"
+				   width="100%" height="100%" backgroundColor="#F7F7F7" borderVisible="false"> 
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<parsley:FastInject property="pModel" type="{TestRunsPM}"/> 
+		
+		<fx:Array id="extraButtons">
+			<fx:Object label="{ResourceManager.getInstance().getString('testrun', 'testruns.status.running')}"
+					   eventType="{TestRunsPM.TESTRUN_RUNNING_EVENT}"
+					   icon="@Embed('/images/testrun/runstatus/running-16.png')"/>
+			<fx:Object label="{ResourceManager.getInstance().getString('testrun', 'testruns.status.stopped')}"
+					   eventType="{TestRunsPM.TESTRUN_STOPPED_EVENT}"
+					   icon="@Embed('/images/testrun/runstatus/stopped-16.png')"/>
+		</fx:Array>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.events.ItemClickEvent;
+			
+			import presentation.events.panels.searchpanel.LinkBarItemClickEvent;
+			import presentation.events.panels.searchpanel.SearchRefreshEvent;
+			import presentation.model.grid.PagingEvent;
+			import presentation.model.testrun.CrudTestRunPM;
+			import presentation.model.testrun.TestRunsPM;
+			
+			import spark.events.IndexChangeEvent;
+			
+			import utils.ComboBoxUtils;
+			
+			[Bindable]
+			public var pModel:TestRunsPM = null;
+			
+			public function onClearProducts(event:MouseEvent):void{
+				productsChangeHandler(null);
+				pModel.loadProducts();
+			}
+		
+			public function onClearTestPlans(event:MouseEvent):void{
+				testPlansChangeHandler(null);
+			}
+			
+			protected function productsChangeHandler(evt:IndexChangeEvent):void {
+				if (evt == null){
+					// Clear products selection
+					productsList.selectedIndex = ComboBoxUtils.NON_SELECTED_INDEX;
+					pModel.selectedProduct = null;
+				} else
+					pModel.selectedProduct = evt.currentTarget.selectedItem.original;
+				
+				// Reload TestPlan list
+				pModel.loadTestPlans();
+				
+				// Clear testplan selection and send a search event
+				onClearTestPlans(null);
+			}
+			
+			protected function testPlansChangeHandler(evt:IndexChangeEvent):void {
+				if (evt == null){
+					// Clear testplan selection
+					testPlansList.selectedIndex = ComboBoxUtils.NON_SELECTED_INDEX;
+					
+					pModel.selectedTestPlan = null;
+				} else
+					pModel.selectedTestPlan = evt.currentTarget.selectedItem.original;
+				
+				pModel.dispatcher(new SearchRefreshEvent(CrudTestRunPM.TESTRUNS_SEARCH_REFRESH_EVENT, PagingEvent.getResetPagingEvent()));
+			}
+			
+			public function linkBarItemClick(event:ItemClickEvent):void {
+				pModel.dispatcher(new LinkBarItemClickEvent(event.item.eventType));
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:HorizontalLayout paddingBottom="6" paddingLeft="5" paddingRight="5" paddingTop="6"/>
+	</s:layout>
+	
+	<s:BorderContainer width="100%" height="100%" borderVisible="false">
+		<s:layout>
+			<s:HorizontalLayout/>
+		</s:layout>
+		
+		<mx:HDividedBox width="100%" height="100%">
+
+			<s:VGroup width="200" height="100%" maxWidth="400">
+				<panels:HeaderPanel id="products" width="100%" height="50%" borderVisible="true"
+									closeButtonClick="onClearProducts"
+									closeButtonImageSource="@Embed('/images/testrun/clear-24.png')"
+									closeButtonToolTip="@Resource(bundle='testrun', key='testruns.shortcuts.icon.tooltip')"
+									closeButtonTop="2" cornerRadiusLeft="5"
+									displayCloseButton="true"
+									title="@Resource(bundle='testrun', key='testruns.shortcuts.products')">
+					
+					<s:VGroup width="100%" height="100%" paddingTop="10"> 
+						<s:List id="productsList" width="100%" height="100%" borderVisible="false"
+								change="productsChangeHandler(event)"
+								dataProvider="{pModel.products}"
+								itemRenderer="presentation.view.testrun.rendered.TestRunIconListItemRendered">
+						</s:List>
+					</s:VGroup>			
+				</panels:HeaderPanel>
+				
+				<panels:HeaderPanel id="testplans" width="100%" height="50%" borderVisible="true"
+									closeButtonClick="onClearTestPlans"
+									closeButtonImageSource="@Embed('/images/testrun/clear-24.png')"
+									closeButtonToolTip="@Resource(bundle='testrun', key='testruns.shortcuts.icon.tooltip')"
+									closeButtonTop="2" displayCloseButton="true"
+									title="@Resource(bundle='testrun', key='testruns.shortcuts.testplans')">
+					
+					<s:VGroup width="100%" height="100%" paddingTop="10"> 
+						<s:List id="testPlansList" width="100%" height="100%" borderVisible="false"
+								change="testPlansChangeHandler(event)"
+								dataProvider="{pModel.testplans}"
+								itemRenderer="presentation.view.testrun.rendered.TestRunIconListItemRendered">
+						</s:List>
+					</s:VGroup>			
+					
+				</panels:HeaderPanel> 
+			</s:VGroup>
+			
+			<s:Group width="100%" height="100%">
+				<panels:HeaderPanel id="mainPaenl" width="100%" height="100%" cornerRadiusRight="5"
+									title="@Resource(bundle='testrun', key='testruns.title')">
+					
+					<panels:SearchPanel width="100%" pmodel="{pModel}">
+						<panels:additionalTitleBarPanel>								
+							<s:HGroup id="extraRunButtons" paddingLeft="20" verticalAlign="middle">
+								<mx:LinkBar id="titleLinkBar" borderStyle="none"
+											borderVisible="false" contentBackgroundAlpha="0"
+											contentBackgroundColor="#0473B2"
+											dataProvider="{extraButtons}" iconField="icon"
+											itemClick="linkBarItemClick(event)">
+								</mx:LinkBar>
+							</s:HGroup>
+						</panels:additionalTitleBarPanel>
+						
+					</panels:SearchPanel>
+
+				</panels:HeaderPanel>
+			</s:Group>
+		</mx:HDividedBox>
+	</s:BorderContainer>
+	
+</s:BorderContainer>

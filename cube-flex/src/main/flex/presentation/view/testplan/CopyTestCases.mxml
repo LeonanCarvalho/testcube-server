@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   xmlns:panels="presentation.view.panels.*"
+				   xmlns:parsley="http://www.spicefactory.org/parsley"
+				   xmlns:lists="presentation.view.lists.*" 
+				   width="800" height="600" borderVisible="false" backgroundColor="#F7F7F7" > 
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<parsley:FastInject property="pModel" type="{CopyTestCasesPM}" /> 
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import presentation.model.testplan.CopyTestCasesPM;
+			import presentation.view.poup.PopUpManagerWrapper;
+			
+			[Bindable]
+			public var pModel:CopyTestCasesPM = null;
+
+			public function onCloseClick(event:MouseEvent):void{
+				PopUpManagerWrapper.getInstance().remove(this);
+			}
+		]]>
+	</fx:Script>
+	
+	
+	<s:layout>
+		<s:HorizontalLayout paddingLeft="5" paddingRight="5" paddingTop="6" paddingBottom="6"/>
+	</s:layout>
+	
+	<s:BorderContainer borderVisible="false" width="100%" height="100%">
+		<s:layout>
+			<s:HorizontalLayout/>
+		</s:layout>
+		
+		<panels:HeaderPanel id="mainPaenl" width="100%" height="100%" title="@Resource(bundle='testcase', key='testcases.title')" 
+							displayCloseButton="true"
+							closeButtonClick="onCloseClick">
+			<panels:SearchPanel width="100%" pmodel="{pModel}"/>
+		</panels:HeaderPanel>
+	</s:BorderContainer>
+	
+</s:BorderContainer>

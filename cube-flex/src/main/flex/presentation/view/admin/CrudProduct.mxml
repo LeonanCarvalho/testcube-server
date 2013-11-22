@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:CrudPanel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				  xmlns:s="library://ns.adobe.com/flex/spark" 
+				  xmlns:mx="library://ns.adobe.com/flex/mx" 
+				  xmlns:panels="presentation.view.panels.*"
+				  xmlns:parsley="http://www.spicefactory.org/parsley"
+				  xmlns:code="http://code.google.com/p/flexlib/"
+				  xmlns:crud="presentation.view.crud.*"
+				  width="440" height="340" >
+	
+	<fx:Script>
+		<![CDATA[
+			import application.model.DomainObject;
+			import application.model.products.Product;
+			
+			import infrastructure.ProductConfig;
+			
+			import mx.events.ValidationResultEvent;
+			
+			import presentation.model.admin.products.CrudProductPM;
+			import presentation.model.admin.users.CrudUserPM;
+			import presentation.view.crud.ICrudPanel;
+			
+			[Bindable]
+			public var pModel:CrudProductPM;
+			
+			[Embed("/images/admin/products-16.png")]
+			private static const PRODUCT_SMALL:Class;
+			
+			override public function injectionComplete(): void {
+				super.pm = pModel;
+				pModel.validateFunction = validate;
+				pModel.setDomainObject(getDomainObject());
+			}
+			
+			// Function to validate data and submit it to the server. 
+			private function validate():Boolean {			
+				var vResult:ValidationResultEvent;
+				
+				// Validate the required fields. 
+				if (nameValid.validate().type==ValidationResultEvent.INVALID)
+					return false;
+				if (descriptionValid.validate().type==ValidationResultEvent.INVALID) 
+					return false;
+				
+				return true;
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<parsley:ContextBuilder config="{ProductConfig}" />
+		
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<parsley:FastInject property="pModel" type="{CrudProductPM}" injectionComplete="injectionComplete()" />
+		
+		<mx:StringValidator id="nameValid" 
+							required="true" 
+							source="{nameText}" 
+							property="text" maxLength="100" />
+		
+		<mx:StringValidator id="descriptionValid" 
+							required="true" 
+							source="{descriptionText}" 
+							property="text" maxLength="200" />
+	</fx:Declarations>
+	
+	<panels:contentPanel>
+		<s:Group width="100%" height="100%">
+			<panels:CrudTab> 
+				<mx:VBox id="infoTab" label="@Resource(bundle='admin', key='admin.administrator.products.crud.tab.info')" icon="{PRODUCT_SMALL}">
+					<s:BorderContainer borderVisible="false" width="100%" height="100%" backgroundColor="#F4F4F4">
+						<panels:FormHeading label="@Resource(bundle='admin', key='admin.administrator.products.crud.header.info')" />
+						
+						<s:HGroup width="100%" height="100%"  top="22">
+							<s:Form id="productForm" width="100%" height="100%" >
+								<s:layout>
+									<s:FormLayout id="productFormLay" paddingLeft="-10" gap="-10" />
+								</s:layout>
+								
+								<crud:FormItem label="@Resource(bundle='admin', key='admin.administrator.products.crud.name')" required="true">
+									<s:TextInput id="nameText" width="150" text="@{pModel.product.name}" height="22" 
+												 showErrorTip="true" showErrorSkin="true" />
+								</crud:FormItem>
+								
+								<crud:FormItem label="@Resource(bundle='admin', key='admin.administrator.products.crud.description')" required="true">
+									<s:TextArea id="descriptionText" width="328" text="@{pModel.product.description}" height="66"
+												 showErrorTip="true" showErrorSkin="true" />
+								</crud:FormItem>
+								
+								<crud:FormItem label="@Resource(bundle='admin', key='admin.administrator.products.crud.enabled')">
+									<s:CheckBox id="enabledText" selected="@{pModel.product.enabled}" height="22"/>
+								</crud:FormItem>				
+							</s:Form>	
+						</s:HGroup>
+					</s:BorderContainer>
+				</mx:VBox>
+			</panels:CrudTab>
+			
+		</s:Group>
+	</panels:contentPanel>
+</panels:CrudPanel>

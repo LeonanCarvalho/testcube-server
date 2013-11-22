@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"      
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+	<h:head>
+		<meta http-equiv="Content-Type" content="application/x-www-form-urlencoded; charset=#{loginBean.characterEncoding}"/>
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta http-equiv="expires" content="0" />
+		<meta http-equiv="pragma" content="no-cache" />
+				
+        <title>#{loginBean.title}</title>
+        <base href="#{loginBean.serverPath}" />
+        <link href="resources/css/main_#{loginBean.direction}.css" rel="stylesheet" type="text/css" />
+		<link href="resources/css/login/login_#{loginBean.direction}.css" rel="stylesheet" type="text/css" />
+    </h:head>	
+	<body>
+		<div id="header_wrapper">
+    		<div id="header">
+        		<div id="logo">
+            		<a href="http://www.jatakasource.org">
+            			<img alt="#{loginBean.productName}" src="resources/images/login/header_logo.png"/>
+            		</a>
+        		</div>
+        		<div class="search_top">
+          			<p></p>
+       	 		</div><!-- END "div.search" -->
+        		<div class="clear"></div>
+    		</div><!-- END "div#header" -->
+		</div>
+		<div id="nav_wrapper">
+			<div class="menu-navigation-container">
+				<ul id="menu-navigation" class="menu">
+				</ul>
+			</div>
+		</div>
+		
+		<div id="dashboard">
+			<div id="dashboard-content">
+				<div id="login-content">
+					<div id="login-content-header">
+						<h3 id="content-header-title">#{loginBean.headerTitle}</h3>
+					</div>
+					<div id="login-content-body" class="view">
+						<form id="form-login" class="login" method="post" action="j_spring_security_check">
+							<div class="field-group">
+								<label id="usernamelabel"><u>#{loginBean.userNameCapital}</u>#{loginBean.userNameLabel}</label>
+								<input id="j_username" class="text medium-field" type="text" name="j_username"/>
+							</div>
+							<div class="field-group">
+								<label id="passwordlabel"><u>#{loginBean.passwordCapital}</u>#{loginBean.passwordLabel}</label>
+								<input id="j_password" class="text medium-field" type="password" name="j_password"/>
+							</div>
+							<fieldset class="group">
+								<div id="rememberme" class="checkbox">
+									<input id="_spring_security_remember_me" class="checkbox" type="checkbox" value="true" name="_spring_security_remember_me"/>
+									<label id="remembermelabel" class="remembermelabel"><u>#{loginBean.rememberCapital}</u>#{loginBean.rememberLabel}</label>
+								</div>
+								<div id="errorMessages">
+									<h:outputLabel id="errormessageslabel" value="#{loginBean.error}" rendered="#{loginBean.errorExists}"/>
+								</div>
+							</fieldset>
+							<div id="buttons-container" class="buttons-container">
+								<div class="buttons">
+									<input id="login-button" class="button" type="submit" value="#{loginBean.loginButton}" name="login"/>
+									<!--<a id="forgotpassword" class="cancel" target="_parent" href="forgotlogin">#{loginBean.forgotPassword}</a>-->
+								</div>
+							</div>
+						</form>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		
+		<div id="footer">
+			<div id="poweredbymessage">
+				<a class="seo-link" href="http://www.jatakasource.com/testcube">#{loginBean.testManagement}</a>#{loginBean.testManagementAnd}
+				<a class="seo-link" href="http://www.jatakasource.com/testcube">#{loginBean.automatedTests}</a>#{loginBean.automatedTestsFor}
+				<a class="seo-link" href="http://www.jatakasource.com/testcube">#{loginBean.softwareDevelopment}</a>#{loginBean.softwareDevelopmentPowered}
+				<a class="smalltext" href="http://www.jatakasource.com/testcube">#{loginBean.productName}</a>
+				<span id="footer-build-information" style="color: #666666;">(v#{loginBean.version}##{loginBean.buildNumber}-r#{loginBean.revisionNumber})</span>
+				<a href="http://support.jatakasource.org/">#{loginBean.reportAProblem}</a>
+			</div>
+		</div>
+</body>
+</html>

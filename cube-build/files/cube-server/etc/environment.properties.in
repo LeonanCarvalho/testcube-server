@@ -1,0 +1,2 @@
+org.jatakasource.testcube.svc.parameters.EnvParametersKeys.DEFAULT_LOCALE=@SERVER_ENCODING@
+org.jatakasource.testcube.svc.parameters.EnvParametersKeys.DEFAULT_DIRECTION=ltr

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/aop
+			http://www.springframework.org/schema/aop/spring-aop.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+
+	<bean id="systemProperties" class="org.jatakasource.common.properties.SystemPlaceholderConfigurer">
+		<property name="ignoreUnresolvablePlaceholders">
+			<value>true</value>
+		</property>
+		<property name="ignoreResourceNotFound">
+			<value>true</value>
+		</property>
+		<property name="locations">
+			<list>
+				<value>classpath:environment.properties</value>
+				<value>${org.jatakasource.testcube.environment.properties}</value>
+			</list>
+		</property>
+	</bean>
+	
+	 <!-- Log4j per cube instance -->
+    <bean id="log4jInitialization" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetClass" value="org.springframework.util.Log4jConfigurer" />
+        <property name="targetMethod" value="initLogging" />
+        <property name="arguments">
+            <list>
+                <value>${org.jatakasource.testcube.log4j.properties}</value>
+            </list>
+        </property>
+    </bean>
+	
+</beans>

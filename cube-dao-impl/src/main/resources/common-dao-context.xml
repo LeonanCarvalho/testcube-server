@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:p="http://www.springframework.org/schema/p" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/tx
+			http://www.springframework.org/schema/tx/spring-tx.xsd
+			http://www.springframework.org/schema/aop
+			http://www.springframework.org/schema/aop/spring-aop.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+	<!-- Hibernate Session Factory -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" depends-on="dataSource">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan">
+			<list>
+				<value>org.jatakasource.testcube.model.**/*</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${org.jatakasource.testcube.database.hibernate.dialect}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${org.jatakasource.testcube.database.hibernate.hbm2ddl.auto}</prop>
+				<prop key="hibernate.jdbc.batch_size">1000</prop>
+				<prop key="hibernate.order_updates">true</prop>
+				<prop key="hibernate.order_inserts">true</prop>
+				<prop key="hibernate.use_sql_comments">false</prop>
+				<prop key="hibernate.connection.release_mode">on_close</prop>
+				<prop key="hibernate.transaction.auto_close_session">false</prop>
+				<prop key="hibernate.bytecode.use_reflection_optimizer">false</prop>
+				<prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory</prop>
+				<prop key="hibernate.cache.use_query_cache">true</prop>
+				<prop key="hibernate.temp.use_jdbc_metadata_defaults">false</prop>
+				<prop key="hibernate.show_sql">false</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- Hibernate Transaction Manager -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager" p:sessionFactory-ref="sessionFactory" p:dataSource-ref="dataSource" depends-on="sessionFactory"/>
+
+	<!--
+		-Dehcache.disk.store.dir - define cache files path
+	-->
+	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" destroy-method="destroy">
+		<property name="configLocation" value="classpath:ehcache.xml" />
+		<property name="shared" value="true" />
+	</bean>
+
+	<tx:annotation-driven />
+
+	<context:component-scan base-package="org.jatakasource.testcube.dao" />
+
+	<import resource="common-dao-ds-context.xml" />
+</beans>

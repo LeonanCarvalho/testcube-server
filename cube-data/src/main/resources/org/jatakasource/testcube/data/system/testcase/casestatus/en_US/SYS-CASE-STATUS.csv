@@ -1,0 +1,4 @@
+name,description,order
+"Proposed","Proposed",100
+"Confirmed","Confirmed",200
+"Disabled","Disabled",300

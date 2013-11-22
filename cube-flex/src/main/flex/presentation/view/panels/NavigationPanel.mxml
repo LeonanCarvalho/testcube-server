@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx" 
+				   height="42" width="100%" 
+				   borderVisible="false" backgroundColor="#0473B2">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:BorderContainer height="42" width="100%"  borderVisible="false" backgroundImage="@Embed('/images/toppanel/navigation/nav_bg.png')">
+		<s:BorderContainer height="42" width="960" borderVisible="false" horizontalCenter="0" verticalCenter="0" backgroundImage="@Embed('/images/toppanel/navigation/nav_inner_bg.png')">
+		</s:BorderContainer>
+	</s:BorderContainer>
+	
+</s:BorderContainer>

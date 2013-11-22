@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+					xmlns:s="library://ns.adobe.com/flex/spark"
+					xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import application.model.testrun.RunstatusEnum;
+			
+			import presentation.model.admin.testrun.RunStatusUtils;
+
+			
+			/**
+			 *  @private
+			 */
+			override public function set enabled(value:Boolean):void
+			{
+				// Make this behave like a Spark Label which does not have a disabledColor style.
+				// ToDo(cframpto):  Should be moved to setStyle or getStyle so in the very remote
+				// chance the style is changed while the component is disabled the change will
+				// take effect.
+				if (!value && super.enabled)
+					setStyle("disabledColor", getStyle("color"));        
+				super.enabled = value;
+			}
+			
+			override public function prepare(hasBeenRecycled:Boolean):void {
+				super.prepare(hasBeenRecycled);
+				
+				lblData.text = data[column.dataField].name;
+				
+				RunStatusUtils.setImage(data[column.dataField].id, img);	
+			}
+		]]>
+	</fx:Script>
+
+	
+	<s:HGroup id="runStatusGrop" width="100%" height="100%" left="7" top="6">
+		<s:Image id="img" verticalAlign="middle" width="16" height="16"/>
+		<s:Label id="lblData" verticalAlign="middle" paddingTop="3"/>
+	</s:HGroup>
+</s:GridItemRenderer>

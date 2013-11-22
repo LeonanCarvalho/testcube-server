@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Objects 
+	xmlns:fx="http://ns.adobe.com/mxml/2009"
+	xmlns:log="http://www.spicefactory.org/parsley/flex/logging"
+	xmlns="http://www.spicefactory.org/parsley">
+	
+	<fx:Declarations>	
+		<Object type="presentation.model.ApplicationContextPM"/>		
+		<Object type="presentation.model.main.CubePM"/>
+		<Object type="presentation.model.panels.TopPanelPM"/>
+		<Object type="presentation.model.admin.AdministratorPM"/>
+		<Object type="presentation.model.admin.users.UsersPM"/>
+		<Object type="presentation.model.admin.products.ProductsPM"/>
+		<Object type="presentation.model.admin.products.ComponentsPM"/>
+		<Object type="presentation.model.admin.products.EnvironmentsPM"/>
+		<Object type="presentation.model.admin.products.BuildsPM"/>
+		<Object type="presentation.model.admin.products.CategoriesPM"/>
+		<Object type="presentation.model.admin.products.VersionsPM"/>
+		<Object type="presentation.model.admin.testcase.CasePrioritiesPM"/>
+		<Object type="presentation.model.admin.testcase.CaseStatusesPM"/>
+		<Object type="presentation.model.admin.testrun.RunStatusesPM"/>
+		<Object type="presentation.model.admin.testplan.PlanTypesPM"/>
+		<Object type="presentation.model.testplan.TestPlansPM"/>
+		<Object type="presentation.model.testcase.TestCasesPM"/>
+		<Object type="presentation.model.testrun.TestRunsPM"/>
+		
+		<Object type="application.ApplicationContextController" />
+		<Object type="application.controller.panels.TopPanelController" />
+		<Object type="application.controller.admin.users.UsersController" />
+		<Object type="application.controller.admin.products.ProductsController" />
+		<Object type="application.controller.admin.products.ComponentsController" />
+		<Object type="application.controller.admin.products.EnvironmentsController" />
+		<Object type="application.controller.admin.products.BuildsController" />
+		<Object type="application.controller.admin.products.CategoriesController" />
+		<Object type="application.controller.admin.products.VersionsController" />
+		<Object type="application.controller.admin.testcase.CasePrioritiesController"/>
+		<Object type="application.controller.admin.testcase.CaseStatusesController"/>
+		<Object type="application.controller.admin.testrun.RunStatusesController"/>
+		<Object type="application.controller.admin.testplan.PlanTypesController"/>
+		<Object type="application.controller.testplan.TestPlansController"/>
+		<Object type="application.controller.testcase.TestCasesController"/>
+		<Object type="application.controller.testrun.TestRunsController"/>
+		<Object type="application.controller.testrun.TestRunResultsController"/>
+	</fx:Declarations>
+</Objects>  

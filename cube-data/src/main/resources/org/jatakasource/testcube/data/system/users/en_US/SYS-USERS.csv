@@ -1,0 +1,3 @@
+username,password,passwordSlat,firstName,lastName,accountNonExpired,accountNonLocked,administrator,credentialsNonExpired,enable
+"system","6EJC6xLH/oJirYf5LomJF4YPck4=","暷뻶뺭大勽핻껌叱刺","System","Administrator",true,true,true,true,true
+"testcube","6EJC6xLH/oJirYf5LomJF4YPck4=","暷뻶뺭大勽핻껌叱刺","Default","Tester",true,true,false,true,true

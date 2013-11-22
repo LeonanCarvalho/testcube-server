@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:CrudPanel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				  xmlns:s="library://ns.adobe.com/flex/spark" 
+				  xmlns:mx="library://ns.adobe.com/flex/mx" 
+				  xmlns:panels="presentation.view.panels.*"
+				  xmlns:parsley="http://www.spicefactory.org/parsley"
+				  xmlns:code="http://code.google.com/p/flexlib/"
+				  xmlns:crud="presentation.view.crud.*"
+				  width="600" height="360" >
+	
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import application.model.DomainObject;
+			
+			import infrastructure.UserConfig;
+			
+			import mx.events.ValidationResultEvent;
+			
+			import presentation.model.admin.users.CrudUserPM;
+			import presentation.view.crud.ICrudPanel;
+			
+			[Bindable]
+			public var pModel:CrudUserPM;
+			
+			[Embed("/images/admin/users-16.png")]
+			private static const USER_SMALL:Class;
+			
+			override public function injectionComplete(): void {
+				super.pm = pModel;
+				pModel.validateFunction = validate;
+				
+				// Reinitiate binding events by reseting domainObject
+				this.setDomainObject(getDomainObject()); 
+			}	
+			
+			// Function to validate data and submit it to the server. 
+			private function validate():Boolean {
+				var vResult:ValidationResultEvent;
+				
+				// Validate the required fields. 
+				if (pModel.isNewState() && usernameValid.validate().type==ValidationResultEvent.INVALID)
+					return false;
+				if (firstNameValid.validate().type==ValidationResultEvent.INVALID) 
+					return false;
+				if (lastNameValid.validate().type==ValidationResultEvent.INVALID) 
+					return false;
+				if (personalIdValid.validate().type==ValidationResultEvent.INVALID) 
+					return false;
+				if (pModel.isNewState() && passwordValid.validate().type==ValidationResultEvent.INVALID) 
+					return false;
+				if (pModel.isNewState() && confirmpasswordValid.validate().type==ValidationResultEvent.INVALID) 
+					return false;
+				
+				return true;
+			}
+			
+			override public function onSaveSuccess():void{
+				username.enabled=pModel.isNewState();	
+			}
+			
+			override public function onSaveNewSuccess():void{
+				username.enabled=pModel.isNewState();	
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<parsley:ContextBuilder config="{UserConfig}" />
+		
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<parsley:FastInject property="pModel" type="{CrudUserPM}" injectionComplete="injectionComplete()" />
+		
+		<mx:StringValidator id="usernameValid" 
+							required="true" 
+							source="{username}" 
+							property="text" minLength="6" maxLength="20" />
+		<mx:StringValidator id="firstNameValid" 
+							required="true" 
+							source="{firstName}" 
+							property="text"  maxLength="100"/>
+		<mx:StringValidator id="lastNameValid" 
+							required="true" 
+							source="{lastName}" 
+							property="text" maxLength="100"/>
+		<mx:StringValidator id="personalIdValid" 
+							required="false" 
+							source="{personalId}" 
+							property="text" maxLength="20"/>
+		<mx:StringValidator id="passwordValid" 
+							required="true" 
+							source="{password}" 
+							property="text" minLength="6" maxLength="12" />
+		<mx:StringValidator id="confirmpasswordValid" 
+							required="true" 
+							source="{confirmpassword}" 
+							property="text" minLength="6" maxLength="12"/>
+	</fx:Declarations>
+	
+	<panels:contentPanel>
+		<s:Group width="100%" height="100%">
+			<panels:CrudTab> 
+				
+				<mx:VBox id="infoTab" label="@Resource(bundle='admin', key='admin.administrator.users.crud.tab.info')" icon="{USER_SMALL}">	
+					<s:BorderContainer borderVisible="false" width="100%" height="100%" backgroundColor="#F4F4F4">
+					
+						<panels:FormHeading label="@Resource(bundle='admin', key='admin.administrator.users.crud.header.info')" />
+						
+						<s:HGroup width="100%" height="100%" top="22">
+							<s:Form id="contactForm" width="48%" height="100%" >
+								<s:layout>
+									<s:FormLayout id="contactFormLay" paddingLeft="-10" gap="-10" />
+								</s:layout>
+								
+								<crud:FormItem label="@Resource(bundle='admin', key='admin.administrator.users.crud.username')" required="true">
+									<s:TextInput id="username" width="150" text="@{pModel.user.username}" height="22" 
+												 showErrorTip="true" showErrorSkin="true" enabled="{pModel.isNewState()}"/>
+								</crud:FormItem>
+								<crud:FormItem label="@Resource(bundle='admin', key='admin.administrator.users.crud.firstName')" required="true">
+									<s:TextInput id="firstName" width="150" text="@{pModel.user.firstName}" height="22" showErrorTip="true" showErrorSkin="true"/>
+								</crud:FormItem>
+								<crud:FormItem label="@Resource(bundle='admin', key='admin.administrator.users.crud.lastName')" required="true">
+									<s:TextInput id="lastName" width="150" text="@{pModel.user.lastName}" height="22" showErrorTip="true" showErrorSkin="true"/>
+								</crud:FormItem>
+								<crud:FormItem label="@Resource(bundle='admin', key='admin.administrator.users.crud.personalid')">
+									<s:TextInput id="personalId" width="150" text="@{pModel.user.personalid}" height="22" showErrorTip="true" showErrorSkin="true"/>
+								</crud:FormItem>
+								<crud:FormItem label="@Resource(bundle='admin', key='admin.administrator.users.crud.password')" required="{pModel.isNewState()}" >
+									<s:TextInput id="password" width="150" displayAsPassword="true" text="@{pModel.user.password}" height="22" showErrorTip="true" showErrorSkin="true"/>
+								</crud:FormItem>						
+							</s:Form>	
+							
+							<s:Form id="accountForm" width="52%" height="100%" >
+								<s:layout>
+									<s:FormLayout id="accountFormLay" paddingLeft="-10" gap="-10" />
+								</s:layout>
+								
+								<crud:FormItem label="@Resource(bundle='admin', key='admin.administrator.users.crud.administrator')">
+									<s:CheckBox id="administrator" selected="@{pModel.user.administrator}" height="22"/>
+								</crud:FormItem>
+								<crud:FormItem label="@Resource(bundle='admin', key='admin.administrator.users.crud.credentialsExpired')">
+									<s:CheckBox id="credentialsExpired" selected="@{pModel.user.credentialsExpired}" height="22"/>
+								</crud:FormItem>
+								<crud:FormItem label="@Resource(bundle='admin', key='admin.administrator.users.crud.accountExpired')">
+									<s:CheckBox id="accountExpired" selected="@{pModel.user.accountExpired}" height="22"/>
+								</crud:FormItem>
+								<crud:FormItem label="@Resource(bundle='admin', key='admin.administrator.users.crud.accountLocked')">
+									<s:CheckBox id="accountLocked" selected="@{pModel.user.accountLocked}" height="22"/>
+								</crud:FormItem>
+								<crud:FormItem label="@Resource(bundle='admin', key='admin.administrator.users.crud.confirmpassword')" required="{pModel.isNewState()}">
+									<s:TextInput id="confirmpassword" width="140" displayAsPassword="true" text="@{pModel.user.confirmpassword}" height="22" showErrorTip="true" showErrorSkin="true"/>
+								</crud:FormItem>
+							</s:Form>
+						</s:HGroup>
+					</s:BorderContainer>
+				</mx:VBox>	
+			</panels:CrudTab>
+
+		</s:Group>
+	</panels:contentPanel>
+</panels:CrudPanel>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				   xmlns:s="library://ns.adobe.com/flex/spark"
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   xmlns:panels="presentation.view.panels.*"
+				   xmlns:parsley="http://www.spicefactory.org/parsley"
+				   width="100%" height="100%" >
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<parsley:FastInject property="testCasesTabPM" type="{TestCasesTabPM}"/> 
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import presentation.model.testplan.TestCasesTabPM;
+			
+			[Bindable]
+			public var testCasesTabPM:TestCasesTabPM;			
+		]]>
+	</fx:Script>
+	<s:VGroup width="100%" height="100%" paddingLeft="1" paddingTop="16">
+	
+		<panels:HeaderPanel id="mainPaenl" width="100%" height="100%" title="Filter cases">
+			<s:Group width="100%" height="100%">
+				<panels:SearchPanel id="searchRunResult" width="100%" pmodel="{testCasesTabPM}" >
+					
+				</panels:SearchPanel>
+			</s:Group>
+			
+		</panels:HeaderPanel>
+	</s:VGroup>	
+	
+
+</s:BorderContainer>

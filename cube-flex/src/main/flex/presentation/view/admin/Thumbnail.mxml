@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:panels="presentation.view.panels.*"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 xmlns:lists="presentation.view.lists.*"
+		 width="100%" height="100%" >
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<panels:HeaderPanel id="mainPaenl" width="100%" height="100%" cornerRadiusRight="5" 
+						title="@Resource(bundle='admin', key='admin.administrator.thumbnail.title')">
+		
+		<s:VGroup id="mainPanel" width="100%" height="100%" paddingTop="30" paddingLeft="40" paddingRight="40"> 
+			<s:Label id="title" name="title" fontSize="16" fontWeight="bold" color="#0473B2"
+					 text="@Resource(bundle='admin', key='admin.administrator.thumbnail.title')" />
+			<s:Line width="100%">
+				<s:stroke>
+					<s:SolidColorStroke color="#0473B2" alpha=".4" weight="0.6"/>
+				</s:stroke>
+			</s:Line>	
+			
+			<s:HGroup width="100%" height="100%" paddingTop="20">
+				<s:VGroup id="firstConlumn" width="50%" height="100%">
+					<s:List id="mainList" minWidth="0" width="100%" height="100%" borderVisible="false" horizontalScrollPolicy="off"
+							selectionColor="#FFFFFF" rollOverColor="#FFFFFF" itemRenderer="presentation.view.admin.rendered.AdminThumbnailListItemRendered">
+						<s:ArrayCollection>
+							<lists:IconListItem name="users" text="@Resource(bundle='admin', key='admin.administrator.users.title')"
+												desc="@Resource(bundle='admin', key='admin.administrator.users.desc')"
+												image="@Embed('/images/admin/users-64.png')"/>
+							<lists:IconListItem name="products" text="@Resource(bundle='admin', key='admin.administrator.products.title')" 
+												desc="@Resource(bundle='admin', key='admin.administrator.products.desc')"
+												image="@Embed('/images/admin/products-64.png')"/>
+							<lists:IconListItem name="components"  text="@Resource(bundle='admin', key='admin.administrator.components.title')" 
+												desc="@Resource(bundle='admin', key='admin.administrator.components.desc')" 
+												image="@Embed('/images/admin/components-64.png')"/>
+							<lists:IconListItem name="categories" text="@Resource(bundle='admin', key='admin.administrator.categories.title')"
+												desc="@Resource(bundle='admin', key='admin.administrator.categories.desc')" 
+												image="@Embed('/images/admin/categories-64.png')"/>
+							<lists:IconListItem name="environments" 
+												text="@Resource(bundle='admin', key='admin.administrator.environments.title')"
+												desc="@Resource(bundle='admin', key='admin.administrator.environments.desc')" 
+												image="@Embed('/images/admin/environments-64.png')"/>
+							<lists:IconListItem name="builds" 
+												text="@Resource(bundle='admin', key='admin.administrator.builds.title')" 
+												desc="@Resource(bundle='admin', key='admin.administrator.builds.desc')"
+												image="@Embed('/images/admin/builds-64.png')"/>						
+						</s:ArrayCollection>
+					</s:List>	
+				</s:VGroup>
+				
+				<s:VGroup id="secondConlumn" width="50%" height="100%">
+					<s:List id="secondearyList" minWidth="0" width="100%" height="100%" borderVisible="false" horizontalScrollPolicy="off"
+							selectionColor="#FFFFFF" rollOverColor="#FFFFFF" itemRenderer="presentation.view.admin.rendered.AdminThumbnailListItemRendered" >
+						<s:ArrayCollection>
+							<lists:IconListItem name="versions" 
+												text="@Resource(bundle='admin', key='admin.administrator.versions.title')"
+												desc="@Resource(bundle='admin', key='admin.administrator.versions.desc')"
+												image="@Embed('/images/admin/versions-64.png')"/>
+							<lists:IconListItem name="casepriorities" 
+												text="@Resource(bundle='admin', key='admin.administrator.casepriorities.title')" 
+												desc="@Resource(bundle='admin', key='admin.administrator.casepriorities.desc')"
+												image="@Embed('/images/admin/casepriorities-64.png')"/>
+							<lists:IconListItem name="casestatuses" 
+												text="@Resource(bundle='admin', key='admin.administrator.casestatuses.title')" 
+												desc="@Resource(bundle='admin', key='admin.administrator.casestatuses.desc')"
+												image="@Embed('/images/admin/casestatuses-64.png')"/>
+							<lists:IconListItem name="runstatuses" 
+												text="@Resource(bundle='admin', key='admin.administrator.runstatuses.title')" 
+												desc="@Resource(bundle='admin', key='admin.administrator.runstatuses.desc')"
+												image="@Embed('/images/admin/runstatuses-64.png')"/>
+							<lists:IconListItem name="plantypes" 
+												text="@Resource(bundle='admin', key='admin.administrator.plantypes.title')" 
+												desc="@Resource(bundle='admin', key='admin.administrator.plantypes.desc')"
+												image="@Embed('/images/admin/plantypes-64.png')"/>
+						</s:ArrayCollection>
+					</s:List>	
+				</s:VGroup>
+			</s:HGroup>
+		</s:VGroup>
+	</panels:HeaderPanel>
+</s:Group>

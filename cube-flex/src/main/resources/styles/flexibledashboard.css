@@ -1,0 +1,92 @@
+
+@namespace mx "library://ns.adobe.com/flex/mx";
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace pod "com.esria.samples.dashboard.view.*";
+@namespace mdi "flexlib.mdi.containers.*";
+@namespace charts "mx.charts.chartClasses.*";
+
+/* flexibledashboard+browser and flexibledashboard+air shared styles */
+
+.mainButton
+{
+	/*chromeColor: #666666;*/
+}
+
+.maximizeRestoreButton
+{
+	up-skin:        	Embed("assets/maximize_up.png");
+	over-skin:      	Embed("assets/maximize_over.png");
+	down-skin:      	Embed("assets/maximize_up.png");
+	selected-up-skin:   Embed("assets/restore_up.png");
+	selected-over-skin: Embed("assets/restore_over.png");
+	selected-down-skin: Embed("assets/restore_up.png");
+}
+
+.minimizeButton
+{
+	up-skin:        Embed("assets/minimize_up.png");
+	over-skin:      Embed("assets/minimize_over.png");
+	down-skin:      Embed("assets/minimize_up.png");
+}
+
+pod|Pod
+{
+	padding-top: 0px;
+	padding-left: 0px;
+	padding-right: 0px;
+	padding-bottom: 0px;
+	/*halo only rounded-bottom-corners: false; */
+	/* halo only border-thickness: 1px; */
+	border-style: solid;
+	border-color: #0473B2;
+	border-alpha: "0.30";
+	/* halo only highlight-alphas: .9, 0; */
+	/* halo only header-colors: #666666, #666666; */
+	corner-radius: 0px;
+	header-height: 22px;
+	/* halo only shadow-direction: right; */
+	/* halo only drop-shadow-color: #999999; */
+    /* color:        #ffffff; */    
+    /* backgroundColor: #333333; */
+}
+
+.podTitle
+{
+	font-size: 11px;
+	font-family: arial;
+	font-weight: bold;
+}
+
+pod|DragHighlight
+{
+	border-color: #CCCCCC;
+	border-thickness: 3px;
+	border-style: solid;
+	background-color: #FFFFFF;
+}
+
+mdi|MDICanvas
+{
+	/*background-color: #666666;*/
+	padding-bottom: 4px;
+	padding-top: 4px;
+	padding-left: 4px;
+	padding-right: 4px;	
+}
+
+
+.leftArrowButton
+{
+	up-skin:		Embed("assets/left_arrow_up.gif");
+	over-skin:		Embed("assets/left_arrow_over.gif");
+	down-skin:		Embed("assets/left_arrow_up.gif");
+	disabled-skin:	Embed("assets/left_arrow_disabled.gif");
+}
+
+.rightArrowButton
+{
+	up-skin:		Embed("assets/right_arrow_up.gif");
+	over-skin:		Embed("assets/right_arrow_over.gif");
+	down-skin:		Embed("assets/right_arrow_up.gif");
+	disabled-skin:	Embed("assets/right_arrow_disabled.gif");
+}

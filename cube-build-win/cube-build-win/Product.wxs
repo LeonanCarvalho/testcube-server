@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/PSExtension"
+     xmlns:sql="http://schemas.microsoft.com/wix/SqlExtension">
+  
+    <!-- Sources And Binaries Locations -->
+    <?define SourcePath="..\.."?>
+    <?define M2Repo="$(env.USERPROFILE)\.m2\repository"?>
+  
+    <!-- Version change handling: ProductVersion is according to maven version, BuildVersion also include BUILD_NUMBER -->
+    <?define ProductVersion="1.1.0"?>
+    <?ifdef env.BUILD_NUMBER ?>
+    <?define BuildVersion="$(var.ProductVersion).$(env.BUILD_NUMBER)"?>
+    <?else ?>
+    <?define BuildVersion="$(var.ProductVersion)"?>
+    <?endif ?>
+    <?define ProductUpgradeCode = "41FF6C85-4A9E-4C90-A8EE-261132161162"?>
+
+    <!-- Product name as you want it to appear in Add/Remove Programs-->
+    <!-- This condition workd only if we build as x64, for now default value is always no --> 
+    <?if $(var.Platform) = x64 ?>
+    <?define Win64 = "yes" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+    <?else ?>
+    <?define Win64 = "no" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+    <?endif ?>
+  
+    <Product Id="*" Name="TestCube Server" Language="1033" Version="$(var.BuildVersion)" Manufacturer="JatakaSource.org" UpgradeCode="$(var.ProductUpgradeCode)">
+        <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" InstallPrivileges="elevated" />
+        <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+        <MediaTemplate EmbedCab="yes" />
+
+        <Upgrade Id="$(var.ProductUpgradeCode)">
+            <UpgradeVersion Minimum="$(var.BuildVersion)" OnlyDetect="yes" Property="NEWERVERSIONDETECTED"/>
+            <UpgradeVersion Minimum="0.0.0" Maximum="$(var.BuildVersion)" IncludeMinimum="yes" IncludeMaximum="no"
+                        Property="OLDERVERSIONBEINGUPGRADED"/>
+        </Upgrade>
+        <Condition Message="A newer version of [ProductName] is already installed.">NOT NEWERVERSIONDETECTED</Condition>
+        
+        <Feature Id="ProductFeature" Title="TestCubeServer" Level="1">
+            <ComponentGroupRef Id="CommonComponents" />
+            <ComponentGroupRef Id="WebComponents" />
+            <ComponentGroupRef Id="LibComponents" />
+            <ComponentGroupRef Id="BinComponents" />
+            <ComponentGroupRef Id="ConfigComponents" />
+            <ComponentGroupRef Id="BackComponents" />
+            <ComponentRef Id="LogComponent" />
+            <ComponentRef Id="TmpComponent" />
+            <ComponentRef Id="CacheComponent" />
+            <ComponentRef Id="WorkComponent" />
+          
+        </Feature>
+        <UI>
+            <UIRef Id="WixUI_Minimal" />
+        </UI>
+
+        <!-- Check some requirements ONLY on "install", but not on modify or uninstall. -->
+        <Property Id="JAVA_CURRENT_VERSION">
+            <RegistrySearch Id="JRE_CURRENT_VERSION_REGSEARCH" Root="HKLM" Key="SOFTWARE\JavaSoft\Java Runtime Environment" Name="CurrentVersion" Type="raw" />
+        </Property>
+        <Property Id="JAVA_CURRENT_VERSION_64BIT">
+          <RegistrySearch Id="JRE_CURRENT_VERSION_REGSEARCH_64BIT" Root="HKLM" Key="SOFTWARE\JavaSoft\Java Runtime Environment" Name="CurrentVersion" Type="raw" Win64="yes" />
+        </Property>
+      
+        <Condition Message="Java Runtime Environmen is not installed or outdated. Please install JRE 1.6 or later."><![CDATA[Installed OR ((JAVA_CURRENT_VERSION >= "1.6") OR (JAVA_CURRENT_VERSION_64BIT >= "1.6"))]]></Condition>
+        <CustomAction Id="SetUserFolder" Property="UserFolder" Value="[%USERPROFILE]" />
+
+        <!-- Change Default installation UI-->
+        <WixVariable Id="WixUILicenseRtf" Value="$(var.SourcePath)\cube-build-win\files\cube-server\License.rtf" />
+        <WixVariable Id="WixUIBannerBmp" Value="$(var.SourcePath)\cube-build-win\files\cube-server\banner.bmp" /> <!-- 493 by 58 pixels, this bitmap will appear at the top of all but the first page of the installer.-->
+        <WixVariable Id="WixUIDialogBmp" Value="$(var.SourcePath)\cube-build-win\files\cube-server\dialog.bmp" /> <!-- 493 by 312 pixels, this bitmap will appear on the first page of the installer. -->
+
+        <!-- Icon displayed in Add/Remove Programs for TestCube application -->
+        <Icon Id="icon.ico" SourceFile="$(var.SourcePath)\cube-build-win\files\cube-server\cube-32.ico"/>
+        <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+    </Product>
+ 
+    <Fragment>
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="$(var.PlatformProgramFilesFolder)">
+                <Directory Id="MANUFACTURERFOLDER" Name="Jataka" >
+                    <Directory Id="INSTALLFOLDER" Name="TestCube" >
+                        <Directory Id="CONFIGFOLDER" Name="config"/>
+                        <Directory Id="LIBFOLDER" Name="lib"/>
+                        <Directory Id="BINFOLDER" Name="bin"/>
+                        <Directory Id="WEBFOLDER" Name="webapps"/>
+                        <Directory Id="LOGFOLDER" Name="logs"/>
+                        <Directory Id="TMPFOLDER" Name="tmp">
+                          <Directory Id="CACHEFOLDER" Name="cache"/>
+                          <Directory Id="WORKFOLDER" Name="work" />
+                        </Directory>
+                      <Directory Id="BACKFOLDER" Name="backup"/>
+                    </Directory>
+                </Directory>
+            </Directory>
+        </Directory>
+    </Fragment>
+    
+    <Fragment>
+      <ComponentGroup Id="CommonComponents" Directory="INSTALLFOLDER">
+        <!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+        <Component Id="CommonComponent" Guid="d7754110-6842-484b-b48c-eee1ede5552e">
+          <File Id="License.rtf" Source="$(var.SourcePath)\cube-build-win\files\cube-server\License.rtf" Name="License.rtf" />
+          <File Id="cube16.ico" Source="$(var.SourcePath)\cube-build-win\files\cube-server\cube-16.ico" Name="testcube.ico" />
+          <File Id="README.txt" Source="$(var.SourcePath)\cube-build-win\files\cube-server\README.txt" Name="README.txt" />
+      </Component>
+      </ComponentGroup>
+      
+      <ComponentGroup Id="WebComponents" Directory="WEBFOLDER">
+          <!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+          <Component Id="WebComponent" Guid="B1A97BEC-194E-41DD-97CC-A3AEA827BC1C">
+              <File Id="cubeserver.war" Source="$(var.SourcePath)\cube-web\target\cube-web.war" KeyPath="yes" Name="testcube-server.war" /> 
+              <!-- TODO: Insert files, registry keys, and other resources here. -->
+          </Component>
+      </ComponentGroup>
+
+      <ComponentGroup Id="LibComponents" Directory="LIBFOLDER">
+        <!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+        <Component Id="LibComponent" Guid="D7131E5F-B538-4973-B6CB-5C1B0829F401">
+          <File Source="$(var.M2Repo)\org\eclipse\jetty\jetty-ajp\8.1.0.v20120127\jetty-ajp-8.1.0.v20120127.jar" Name="jetty-ajp-8.1.0.v20120127.jar" />
+          <File Source="$(var.M2Repo)\org\eclipse\jetty\jetty-continuation\8.1.0.v20120127\jetty-continuation-8.1.0.v20120127.jar" Name="jetty-continuation-8.1.0.v20120127.jar" />
+          <File Source="$(var.M2Repo)\org\eclipse\jetty\jetty-http\8.1.0.v20120127\jetty-http-8.1.0.v20120127.jar" Name="jetty-http-8.1.0.v20120127.jar" />
+          <File Source="$(var.M2Repo)\org\eclipse\jetty\jetty-io\8.1.0.v20120127\jetty-io-8.1.0.v20120127.jar" Name="jetty-io-8.1.0.v20120127.jar" />
+          <File Source="$(var.M2Repo)\org\eclipse\jetty\jetty-security\8.1.0.v20120127\jetty-security-8.1.0.v20120127.jar" Name="jetty-security-8.1.0.v20120127.jar" />
+          <File Source="$(var.M2Repo)\org\eclipse\jetty\jetty-server\8.1.0.v20120127\jetty-server-8.1.0.v20120127.jar" Name="jetty-server-8.1.0.v20120127.jar" />
+          <File Source="$(var.M2Repo)\org\eclipse\jetty\jetty-servlet\8.1.0.v20120127\jetty-servlet-8.1.0.v20120127.jar" Name="jetty-servlet-8.1.0.v20120127.jar" />
+          <File Source="$(var.M2Repo)\org\eclipse\jetty\jetty-util\8.1.0.v20120127\jetty-util-8.1.0.v20120127.jar" Name="jetty-util-8.1.0.v20120127.jar" />
+          <File Source="$(var.M2Repo)\org\eclipse\jetty\jetty-webapp\8.1.0.v20120127\jetty-webapp-8.1.0.v20120127.jar" Name="jetty-webapp-8.1.0.v20120127.jar" />
+          <File Source="$(var.M2Repo)\org\eclipse\jetty\jetty-xml\8.1.0.v20120127\jetty-xml-8.1.0.v20120127.jar" Name="jetty-xml-8.1.0.v20120127.jar" />
+          <File Source="$(var.M2Repo)\org\mortbay\jetty\servlet-api\3.0.20100224\servlet-api-3.0.20100224.jar" Name="servlet-api-3.0.20100224.jar" />
+          <File Source="$(var.M2Repo)\javax\servlet\jsp\jsp-api\2.1\jsp-api-2.1.jar" Name="jsp-api-2.1.jar" />
+          <File Source="$(var.M2Repo)\org\jatakasource\testcube\cube-build\$(var.ProductVersion)\cube-build-1.1.0.jar" Name="cube-build-1.1.0.jar" />
+          <!-- TODO: Insert files, registry keys, and other resources here. -->
+        </Component>
+      </ComponentGroup>
+      
+      <ComponentGroup Id="ConfigComponents" Directory="CONFIGFOLDER">
+        <Component Id="ConfigComponent" Guid="42F7ECBF-DCBF-4C1D-8159-5BFF50CED1CA">
+          <File Id="db.properties" Source="$(var.SourcePath)\cube-build-win\files\cube-server\etc\db.properties"/>
+          <File Id="environment.properties" Source="$(var.SourcePath)\cube-build-win\files\cube-server\etc\environment.properties"/>
+          <File Id="log4j.xml" Source="$(var.SourcePath)\cube-build-win\files\cube-server\etc\log4j.xml"/>
+          <File Id="server.version" Source="$(var.SourcePath)\cube-build-win\files\cube-server\etc\server.version"/>
+          <File Id="sys.properties" Source="$(var.SourcePath)\cube-build-win\files\cube-server\etc\sys.properties"/>
+          <File Id="jetty.xml" Source="$(var.SourcePath)\cube-build-win\files\cube-server\etc\jetty.xml"/>
+        </Component>
+      </ComponentGroup>
+
+      <ComponentGroup Id="BinComponents" Directory="BINFOLDER">
+        <Component Id="BinComponent" Guid="ECE3679B-4109-415A-941E-2EF229F58650">
+          <File Id="standalone.conf.bat" Source="$(var.SourcePath)\cube-build-win\files\cube-server\bin\standalone.conf.bat"/>
+          <File Id="standalone.bat" Source="$(var.SourcePath)\cube-build-win\files\cube-server\bin\standalone.bat"/>
+        </Component>
+      </ComponentGroup>
+
+      <ComponentGroup Id="BackComponents" Directory="BACKFOLDER">
+        <Component Id="BackComponent" Guid="783d4846-bb9d-4bf9-903f-d5e82746d48d">
+          <File Id="testcube_server.backup" Source="$(var.SourcePath)\cube-build-win\files\resources\testcube_server.backup"/>
+        </Component>
+      </ComponentGroup>
+      
+      <DirectoryRef Id="LOGFOLDER">
+        <Component Id="LogComponent" Guid="2655B822-1870-4D2A-8756-081A48471C90">
+          <CreateFolder />
+        </Component>
+      </DirectoryRef>
+
+      <DirectoryRef Id="TMPFOLDER">
+        <Component Id="TmpComponent" Guid="A6E58AAD-8FD2-4144-9961-38AA3FD0A972">
+          <CreateFolder />
+        </Component>
+      </DirectoryRef>
+      
+      <DirectoryRef Id="CACHEFOLDER">
+        <Component Id="CacheComponent" Guid="2FA7A41D-DBBD-4D1E-8D96-56122D8E6594">
+          <CreateFolder />
+        </Component>
+      </DirectoryRef>
+
+      <DirectoryRef Id="WORKFOLDER">
+        <Component Id="WorkComponent" Guid="AB047160-98A3-4A3B-8E71-8E0EF2D56F59">
+          <CreateFolder />
+        </Component>
+      </DirectoryRef>
+    </Fragment>
+</Wix>
