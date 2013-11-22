@@ -17,6 +17,7 @@
 	<name>CUBE ${project.artifactId} :: Flex Client</name>
 
 	<build>
+		<finalName>iadc-flex-${version}.${buildNumber}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.sonatype.flexmojos</groupId>
@@ -34,11 +35,11 @@
 					</modules>
 
 					<defines>
-					 	<property>
-						 	<name>CONFIG::DEBUGIP</name>
-						 	<value>"127.0.0.1"</value>
-					 	</property>
-				 	</defines> 
+						<property>
+							<name>CONFIG::DEBUGIP</name>
+							<value>"127.0.0.1"</value>
+						</property>
+					</defines>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -88,9 +88,9 @@
 
 
     <!-- ======================================================= -->
-    <!-- Configure artifactory                                   -->
+    <!-- Configure testcube                                   -->
     <!-- ======================================================= -->
-    <New id="artifactory" class="org.eclipse.jetty.webapp.WebAppContext">
+    <New id="testcube" class="org.eclipse.jetty.webapp.WebAppContext">
         <Call name="setContextPath">
             <Arg>/testcube-server</Arg>
         </Call>
@@ -118,7 +118,7 @@
                         <New id="contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection">
                             <Call name="addHandler">
                                 <Arg>
-                                    <Ref id="artifactory">
+                                    <Ref id="testcube">
                                         <Set name="configurationClasses">
                                             <!--
                                             Use a custom list that omits org.eclipse.jetty.webapp.TagLibConfiguration

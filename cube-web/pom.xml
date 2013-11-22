@@ -62,35 +62,10 @@
 								</goals>
 							</execution>
 						</executions>
-					</plugin>
-
-					<plugin>
-						<artifactId>maven-resources-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>copy-resources</id>
-								<!-- here the phase you need -->
-								<phase>validate</phase>
-								<goals>
-									<goal>copy-resources</goal>
-								</goals>
-								<configuration>
-									<outputDirectory>${basedir}/src/main/flex-wrapper</outputDirectory>
-									<overwrite>true</overwrite>
-									<resources>
-										<resource>
-											<directory>${flex.home}/templates/swfobject</directory>
-											<includes>
-												<include>**/*.*</include>
-											</includes>
-											<excludes>
-												<exclude>index.template.html</exclude>
-											</excludes>
-										</resource>
-									</resources>
-								</configuration>
-							</execution>
-						</executions>
+						<configuration>
+							<useFinalName>false</useFinalName>
+							<!--stripVersion>true</stripVersion -->
+						</configuration>
 					</plugin>
 
 					<plugin>
@@ -120,7 +95,7 @@
 					<groupId>org.jatakasource.testcube</groupId>
 					<artifactId>cube-flex</artifactId>
 					<version>${version}</version>
-				        <type>swf</type>
+					<type>swf</type>
 				</dependency>
 
 				<!-- Additional Flex modules -->
@@ -160,15 +135,15 @@
 			</resource>
 		</resources>
 	</build>
-	
-	<!-- Also required here to copy flex resource in the build phase-->
+
+	<!-- Also required here to copy flex resource in the build phase -->
 	<pluginRepositories>
 		<pluginRepository>
 			<id>flex-mojos-repository2</id>
 			<url>http://repository.sonatype.org/content/groups/flexgroup</url>
 		</pluginRepository>
 	</pluginRepositories>
-	
+
 	<repositories>
 		<repository>
 			<id>flexmojos repository</id>
