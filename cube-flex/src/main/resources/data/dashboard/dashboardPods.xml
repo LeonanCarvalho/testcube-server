@@ -34,18 +34,18 @@
 			title="Latest status"
 			type="list"
 			selectedViewIndex="1"
-			module="cube-flex-1.1.0Lateststatus.swf"/>
+			module="cube-flex-1.1.0-lateststatus.swf"/>
 		<pod
 			id="activities"
 			title="Activities"
 			type="chart"
 			selectedViewIndex="2"
-			module="cube-flex-1.1.0Activities.swf"/>
+			module="cube-flex-1.1.0-activities.swf"/>
 		<pod
 			id="recentruns"
 			title="Recent runs"
 			type="list"
 			selectedViewIndex="3"
-			module="cube-flex-1.1.0Recentruns.swf"/>
+			module="cube-flex-1.1.0-recentruns.swf"/>
 	</view>
 </views>
