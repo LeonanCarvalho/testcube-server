@@ -21,7 +21,7 @@ BuildRoot:	%{buildroot}
 BuildArch:	noarch
 Requires:	logrotate
 %if %{_vendor} == "redhat"
-Requires:	java-1.6.0-openjdk >= 1.6.0, vixie-cron
+Requires:	java-1.6.0-openjdk >= 1.6.0
 %endif
 %description
 Testcube is a test case management tool designed to integrate & track enterprise-wide Test Cases.  
@@ -31,7 +31,7 @@ Testcube is a test case management tool designed to integrate & track enterprise
 # Extract source0 to cube-build-${version}
 %setup -n cube-build-${version}
 
-# Extract source1 to jataka-common-build-1.0.0 and then cd to cube-build-${version}
+# Extract source1 to jataka-common-build-1.1.0 and then cd to cube-build-${version}
 %setup -T -D -a 1 -n cube-build-${version}
 
 %install
