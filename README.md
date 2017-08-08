@@ -1,6 +1,6 @@
 Testcube Server
 ===============
-# Atention!
+# Attention!
 ### It's a fork from the original repository, which was deleted.
 (If you made it works please share with us.)
 ### Overview
